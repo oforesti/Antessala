@@ -283,6 +283,18 @@ input[type=range]{width:100%;accent-color:var(--latao);padding:0;border:none;bac
 .limite ul{padding-left:20px}
 .limite li{margin-bottom:9px}
 
+img,svg{max-width:100%;height:auto}
+.grid,.grid-2,.dcabeca,.item,.atv,.card,.cartao{min-width:0}
+.card,.cartao,.item,.atv,.relacao,.atrito,.ganho,.fecho{overflow-wrap:anywhere}
+.linha-tempo li,.leitura li,.acao{min-width:0}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--texto-2) 50%),linear-gradient(135deg,var(--texto-2) 50%,transparent 50%);background-position:calc(100% - 18px) 55%,calc(100% - 13px) 55%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:38px}
+.linha-pessoa{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-top:16px}
+.linha-pessoa>div{flex:1 1 200px;min-width:0}
+.hero select{background-color:var(--breu-2);border-color:var(--linha-escura);color:var(--claro)}
+.pronta{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--musgo)}
+.pronta i{width:7px;height:7px;border-radius:50%;background:var(--musgo);display:block}
+.avancado{background:none;border:none;padding:0;margin-top:14px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--texto-2);cursor:pointer;text-decoration:underline}
+.escondido{display:none}
 @media (max-width:820px){
   .dcabeca{grid-template-columns:1fr;gap:24px}
   .dcabeca .radar-box{order:-1;max-width:320px}
@@ -291,6 +303,31 @@ input[type=range]{width:100%;accent-color:var(--latao);padding:0;border:none;bac
   .item-acoes{flex-direction:row;flex-wrap:wrap}
   .linha-tempo li{grid-template-columns:1fr;gap:4px}
   .afirmacao{font-size:21px}
+}
+@media (max-width:640px){
+  .wrap,.wrap-estreito{padding:0 16px}
+  .hero{padding:22px}
+  .cartao,.atv{padding:16px}
+  .relacao{padding:16px 18px}
+  .atrito{padding:16px 18px}
+  .cabecalho{padding:22px 0 4px}
+  .cabecalho h1{font-size:clamp(23px,6.4vw,30px)}
+  .aba{padding:10px 9px;font-size:10px;letter-spacing:.06em}
+  .abas{gap:2px}
+  .relacao .valor{font-size:34px}
+  .fala .bolha{max-width:100%;font-size:16px}
+  .notas{grid-template-columns:1fr 1fr}
+  h4{margin:30px 0 12px;font-size:18px}
+  .grid{grid-template-columns:1fr}
+  .modal{padding:12px}
+  .modal-caixa{padding:20px}
+}
+@media (max-width:380px){
+  body{font-size:16px}
+  .btn{padding:12px 18px;font-size:15px}
+  .btn-vazado{padding:11px 15px;font-size:14px}
+  .notas{grid-template-columns:1fr}
+  .avatar{width:34px;height:34px;font-size:12px}
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
@@ -349,9 +386,11 @@ input[type=range]{width:100%;accent-color:var(--latao);padding:0;border:none;bac
 <div class="modal" id="modal-ia" role="dialog" aria-modal="true">
   <div class="modal-caixa">
     <h3>Conexão da IA</h3>
-    <p>É a IA que monta as cenas, escreve as devolutivas e lê o seu currículo. Dentro do Claude ela já vem ligada. Publicado em outro lugar, aponte para o seu servidor.</p>
+    <p id="ia-explica">É a IA que monta as cenas, escreve as devolutivas e lê o seu currículo.</p>
     <p class="estado-ia" id="estado-ia"></p>
     <div class="nota-seg" style="margin:14px 0 0"><strong>Sem cartão e sem chave:</strong> suba o arquivo <em>worker-cloudflare.js</em> no Cloudflare Workers (plano gratuito), ligue o binding Workers AI e cole aqui embaixo o endereço dele terminando em <em>/api/antessala</em>. O passo a passo está escrito dentro do próprio arquivo.</div>
+    <button class="avancado" id="abre-avancado">configuração avançada</button>
+    <div id="area-avancada" class="escondido">
     <label class="campo-rot" for="in-endpoint">Endereço do seu servidor</label>
     <input id="in-endpoint" type="text" placeholder="https://seu-servidor.com/api/antessala" autocomplete="off">
     <label class="campo-rot" for="in-chave">Ou uma chave da API, só para testar no seu aparelho</label>
@@ -360,6 +399,7 @@ input[type=range]{width:100%;accent-color:var(--latao);padding:0;border:none;bac
     <label class="campo-rot" for="in-modelo">Modelo (deixe vazio para o app descobrir sozinho)</label>
     <input id="in-modelo" type="text" placeholder="claude-sonnet-5" autocomplete="off">
     <div class="nota-seg"><strong>Não publique o app com a chave colada aqui.</strong> Ela fica visível para qualquer pessoa que abrir o código da página.</div>
+    </div>
     <div id="teste-ia"></div>
     <div class="acoes">
       <button class="btn" id="salvar-ia">Salvar</button>
@@ -413,15 +453,29 @@ function listaModelos(){ return ehGemini()?MODELOS_GEMINI:MODELOS_ANTHROPIC; }
 function modeloAtual(){
   if(estado.conexao.modelo) return estado.conexao.modelo;
   if(ehGemini()) return "gemini-2.5-flash";
-  return (estado.conexao.chave||estado.conexao.endpoint)?"claude-sonnet-5":"claude-sonnet-4-6";
+  return (estado.conexao.chave||endpointAtivo())?"claude-sonnet-5":"claude-sonnet-4-6";
 }
 /* O app fala com dois provedores. Chave do Google começa com AIza — dá para
    reconhecer sozinho e falar direto com o Gemini, sem servidor no meio. */
-function ehGemini(){ return /^AIza/.test(estado.conexao.chave||"") && !estado.conexao.endpoint; }
+function ehGemini(){ return /^AIza/.test(estado.conexao.chave||"") && !endpointAtivo(); }
+/* Quando o app está publicado junto com uma função de servidor (Vercel, Netlify
+   Functions, Worker), ele acha o servidor sozinho em /api/antessala e você não
+   precisa configurar nada na tela. */
+var AUTO_ENDPOINT="";
+function endpointAtivo(){ return estado.conexao.endpoint||AUTO_ENDPOINT||""; }
+function procuraServidor(){
+  if(estado.conexao.endpoint||estado.conexao.chave) return Promise.resolve();
+  if(location.protocol.indexOf("http")!==0) return Promise.resolve();
+  var alvo=location.origin+"/api/antessala";
+  return fetch(alvo,{method:"GET"}).then(function(r){ return r.ok?r.json():null; })
+    .then(function(d){
+      if(d&&d.ok){ AUTO_ENDPOINT=alvo; IA.modo="servidor"; pintaIA(); }
+    }).catch(function(){});
+}
 function umaChamada(modelo,system,messages,maxTokens){
   var url,cab={"Content-Type":"application/json"},corpo;
-  if(estado.conexao.endpoint){
-    url=estado.conexao.endpoint;
+  if(endpointAtivo()){
+    url=endpointAtivo();
     corpo={model:modelo,max_tokens:maxTokens||1000,system:system,messages:messages};
   }else if(ehGemini()){
     url="https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(modelo)+
@@ -470,16 +524,16 @@ function chamar(system,messages,maxTokens){
     }
     tentados.push(lista[i]);
     return umaChamada(lista[i],system,messages,maxTokens).then(function(d){
-      if(estado.conexao.modelo!==lista[i]&&(estado.conexao.chave||estado.conexao.endpoint)){
+      if(estado.conexao.modelo!==lista[i]&&(estado.conexao.chave||endpointAtivo())){
         estado.conexao.modelo=lista[i]; salva();
       }
-      IA.modo=estado.conexao.endpoint?"servidor":(estado.conexao.chave?"chave":"claude");
+      IA.modo=endpointAtivo()?"servidor":(estado.conexao.chave?"chave":"claude");
       pintaIA();
       return textoDaResposta(d);
     }).catch(function(err){
       var modeloRuim=(err.status===404)||(err.status===400&&/model/i.test(err.message||""));
       if(modeloRuim) return tenta(i+1);
-      if(!estado.conexao.endpoint&&!estado.conexao.chave){ IA.modo="offline"; pintaIA(); }
+      if(!endpointAtivo()&&!estado.conexao.chave){ IA.modo="offline"; pintaIA(); }
       throw err;
     });
   }
@@ -526,6 +580,23 @@ function idxEixo(n){
   for(var i=0;i<EIXOS.length;i++) if(EIXOS[i]===n) return i;
   for(var j=0;j<EIXOS.length;j++) if(n.indexOf(EIXOS[j].split(" ")[0])>=0) return j;
   return -1;
+}
+function ctxUsuario(){
+  var k=estado.conta||{},p=[];
+  if(k.nome) p.push("nome "+k.nome);
+  if(k.idade) p.push(k.idade+" anos");
+  if(k.situacao) p.push({clt:"trabalha registrado",autonomo:"autônomo ou dono do próprio negócio",estudante:"estudando",procurando:"procurando emprego"}[k.situacao]||"");
+  if(k.empresa) p.push("em "+k.empresa);
+  if(k.cargo) p.push("como "+k.cargo);
+  var t=p.filter(Boolean).join(", ");
+  return t?("Sobre quem está treinando: "+t+".\n"):"";
+}
+function ctxPessoa(f){
+  if(!f) return "";
+  return "Pessoa envolvida: "+f.nome+", "+f.papel+". "+(f.desc||"")+"\n"+
+    "Roda dela na ordem "+EIXOS.join(", ")+": "+f.roda.join(", ")+".\n"+
+    "Nota da relação com o usuário: "+num(f.relacao)+"/10."+(f.relacaoPorque?" ("+f.relacaoPorque+")":"")+"\n"+
+    ((f.notas&&f.notas.length)?("Últimos episódios anotados: "+f.notas.slice(-3).map(function(n){return n.texto;}).join(" | ")+"\n"):"");
 }
 function fracos(q){
   return estado.roda.map(function(v,i){return {i:i,v:v};})
@@ -720,12 +791,18 @@ function ligaVoltar(escopo){
 
 /* ================= MODAL / CONEXÃO ================= */
 function pintaIA(){
-  var t={claude:"conectada aqui dentro do Claude",servidor:"conectada ao seu servidor",chave:(ehGemini()?"conectada ao Google Gemini":"conectada com chave da Anthropic"),
+  var t={claude:"conectada aqui dentro do Claude",servidor:(AUTO_ENDPOINT&&!estado.conexao.endpoint?"conectada ao servidor deste site":"conectada ao seu servidor"),chave:(ehGemini()?"conectada ao Google Gemini":"conectada com chave da Anthropic"),
          offline:"sem conexão",desconhecido:"ainda não usada nesta sessão"}[IA.modo];
   var e=el("estado-ia"); if(e) e.innerHTML="Estado: <b>"+t+"</b>";
   el("btn-ia").classList.toggle("ligado",IA.modo!=="offline"&&IA.modo!=="desconhecido");
 }
 function abreModal(){
+  var pronto=(AUTO_ENDPOINT&&!estado.conexao.endpoint);
+  el("ia-explica").innerHTML=pronto
+    ? '<span class="pronta"><i></i>IA pronta para uso</span><br>Este app já vem com a IA configurada no servidor. Você não precisa fazer nada aqui.'
+    : "É a IA que monta as cenas, escreve as devolutivas e lê o seu currículo. Ela ainda não foi encontrada — configure abaixo.";
+  el("area-avancada").classList.toggle("escondido",!!pronto);
+  el("abre-avancado").classList.toggle("escondido",!pronto);
   el("in-endpoint").value=estado.conexao.endpoint;
   el("in-chave").value=estado.conexao.chave;
   el("in-modelo").value=estado.conexao.modelo||"";
@@ -734,6 +811,10 @@ function abreModal(){
 }
 function fechaModal(){ el("modal-ia").classList.remove("on"); }
 el("btn-ia").addEventListener("click",abreModal);
+el("abre-avancado").addEventListener("click",function(){
+  el("area-avancada").classList.remove("escondido");
+  this.classList.add("escondido");
+});
 el("fechar-ia").addEventListener("click",fechaModal);
 el("modal-ia").addEventListener("click",function(e){ if(e.target===el("modal-ia")) fechaModal(); });
 el("salvar-ia").addEventListener("click",function(){
@@ -823,6 +904,13 @@ function telaResolver(){
   c.innerHTML='<div class="wrap"><div class="hero escuro">'+
     '<h1>Ensaie aqui a conversa <em>que você vai ter lá.</em></h1>'+
     '<p class="lede">Conte a situação escrevendo ou falando. A Antessala monta quem está do outro lado, você treina, e a devolutiva mostra a frase exata que travou.</p>'+
+    '<div class="linha-pessoa"><div>'+
+      '<label for="sit-pessoa" style="margin-top:0">Com quem é essa conversa?</label>'+
+      '<select id="sit-pessoa"><option value="">Alguém novo — monte a ficha</option>'+
+      Object.keys(estado.fichas).map(function(i){
+        var f=estado.fichas[i];
+        return '<option value="'+i+'">'+esc(f.nome)+' — '+esc(f.papel)+'</option>';
+      }).join("")+'</select></div></div>'+
     '<label for="sit">O que está pegando agora?</label>'+
     '<textarea id="sit" placeholder="Ex.: meu sócio anunciou uma mudança de prazo na frente do time e eu não reagi"></textarea>'+
     '<p class="erro" id="erro-sit">Escreva ou fale a situação primeiro.</p>'+
@@ -853,20 +941,30 @@ function telaResolver(){
   el("montar").addEventListener("click",function(){
     var t=ta.value.trim();
     if(!t){ el("erro-sit").classList.add("aberto"); ta.focus(); return; }
-    montaCena(t);
+    montaCena(t,el("sit-pessoa").value);
   });
   el("entrar-cena").addEventListener("click",function(){ if(destinoCena) vai("#/treino/"+destinoCena); });
   Array.prototype.forEach.call(c.querySelectorAll(".chip"),function(b){
-    b.addEventListener("click",function(){ ta.value=b.textContent; montaCena(b.textContent); });
+    b.addEventListener("click",function(){ ta.value=b.textContent; montaCena(b.textContent,el("sit-pessoa").value); });
   });
 }
-function montaCena(txt){
+var P_CENA=
+"Você monta uma cena de treino de conversa difícil com uma pessoa que já tem ficha. Devolva SOMENTE JSON:\n"+
+'{"limite":false,"situacao":"","tags":["","","",""],"competencias":["","",""],"abertura":"","rotulos":["","",""],"saidas":["","",""]}\n\n'+
+"situacao: título curto do que está em jogo, em primeira pessoa.\n"+
+"competencias: três destas — "+EIXOS.join(", ")+" — as que ESTA conversa mais exige do usuário.\n"+
+"abertura: a primeira fala da pessoa, 1 ou 2 frases, coerente com a ficha dela e já dentro da tensão.\n"+
+"rotulos: a pergunta feita ao usuário em cada uma das 3 rodadas. saidas: 3 falas prontas em primeira pessoa.\n"+
+"Português do Brasil. Se envolver assédio, violência, discriminação ou crime, devolva {\"limite\":true}.";
+
+function montaCena(txt,pessoaId){
   if(ehLimite(txt)){ vai("#/limite"); return; }
   var painel=el("painel");
+  if(pessoaId&&estado.fichas[pessoaId]) return novaCenaPara(pessoaId,txt);
   el("painel-rot").textContent="Montando sua cena";
   el("painel-eco").innerHTML='<span class="digitando">lendo o relato e montando quem está do outro lado<i></i><i></i><i></i></span>';
   el("entrar-cena").disabled=true; painel.classList.add("aberto");
-  chamar(P_FICHA,[{role:"user",content:"Relato: "+txt}],2000).then(function(s){
+  chamar(ctxUsuario()+P_FICHA,[{role:"user",content:"Relato: "+txt}],2000).then(function(s){
     var f=comoJSON(s);
     if(f.limite){ vai("#/limite"); return; }
     var id=uid("p");
@@ -890,6 +988,33 @@ function montaCena(txt){
   }).catch(function(err){
     el("painel-rot").textContent="Não consegui montar a cena";
     el("painel-eco").textContent=diagnostica(err)+" Toque no ícone de conexão no topo para testar.";
+    el("entrar-cena").disabled=true;
+  });
+}
+
+function novaCenaPara(id,txt){
+  var f=estado.fichas[id],painel=el("painel");
+  el("painel-rot").textContent="Montando a cena com "+f.nome;
+  el("painel-eco").innerHTML='<span class="digitando">usando a ficha que você já tem<i></i><i></i><i></i></span>';
+  el("entrar-cena").disabled=true; painel.classList.add("aberto");
+  chamar(ctxUsuario()+ctxPessoa(f)+"\n"+P_CENA,[{role:"user",content:"Situação nova: "+txt}],1200)
+  .then(function(s){
+    var c=comoJSON(s);
+    if(c.limite){ vai("#/limite"); return; }
+    f.cena={situacao:c.situacao||txt,tags:(c.tags||[]).map(function(t,i){return [t,i<2?1:0];}),
+      competencias:c.competencias||["assertividade","firmeza sob pressão","clareza"],
+      abertura:c.abertura,rotulos:c.rotulos||["O que você diz?","E agora?","Última fala."],
+      saidas:c.saidas||["","",""],feita:0};
+    f.notas=f.notas||[];
+    f.notas.push({data:hoje(),texto:"Nova cena montada: "+(c.situacao||txt),efeito:null});
+    destinoCena=id; salva();
+    el("painel-rot").textContent="Pronto";
+    el("painel-eco").innerHTML="Cena com <strong style=\"color:#EDEFEB\">"+esc(f.nome)+"</strong>: "+esc(c.situacao||txt)+
+      "<br><span style=\"font-size:14.5px\">Ele entra reagindo do jeito que está na ficha dele.</span>";
+    el("entrar-cena").disabled=false;
+  }).catch(function(err){
+    el("painel-rot").textContent="Não consegui montar a cena";
+    el("painel-eco").textContent=diagnostica(err);
     el("entrar-cena").disabled=true;
   });
 }
@@ -987,7 +1112,7 @@ function encerraCena(){
   el("etapa").textContent="avaliando…";
   var carr=pensa("Avaliando a cena");
   var tr=T.hist.map(function(m){return (m.role==="user"?"USUÁRIO: ":T.f.nome.toUpperCase()+": ")+m.content;}).join("\n");
-  chamar(P_AVAL,[{role:"user",content:"Competências a avaliar: "+T.f.cena.competencias.join(", ")+".\n\nTranscrição:\n"+tr}],1500)
+  chamar(ctxUsuario()+ctxPessoa(T.f)+"\n"+P_AVAL,[{role:"user",content:"Competências a avaliar: "+T.f.cena.competencias.join(", ")+".\n\nTranscrição:\n"+tr}],1500)
     .then(function(s){ carr.remove(); el("etapa").textContent="cena encerrada"; mostraDev(comoJSON(s)); })
     .catch(function(err){
       carr.remove(); el("etapa").textContent="avaliação falhou";
@@ -1095,7 +1220,7 @@ function telaFichas(){
     var s=el("saida-ficha");
     s.innerHTML='<p class="digitando" style="margin-top:16px">montando a ficha e a roda dessa pessoa<i></i><i></i><i></i></p>';
     el("criar-ficha").disabled=true;
-    chamar(P_FICHA,[{role:"user",content:"Relato: "+t}],2000).then(function(r){
+    chamar(ctxUsuario()+P_FICHA,[{role:"user",content:"Relato: "+t}],2000).then(function(r){
       var f=comoJSON(r);
       if(f.limite){ vai("#/limite"); return; }
       var id=uid("p");
@@ -1218,7 +1343,7 @@ function registraNota(id,escopo){
   }
   saida.innerHTML='<p class="digitando" style="margin-top:12px">lendo o episódio<i></i><i></i><i></i></p>';
   el("salvar-nota").disabled=true;
-  var sys="Você atualiza a ficha que alguém mantém sobre uma pessoa do trabalho, a partir de um episódio novo.\n"+
+  var sys=ctxUsuario()+"Você atualiza a ficha que alguém mantém sobre uma pessoa do trabalho, a partir de um episódio novo.\n"+
     "Ficha atual — "+p.nome+", "+p.papel+". "+p.desc+"\n"+
     "Roda dela na ordem "+EIXOS.join(", ")+": "+p.roda.join(", ")+".\n"+
     "Nota atual da relação: "+p.relacao+" de 10.\n"+
@@ -1259,11 +1384,9 @@ function pedeOrientacao(id){
   var box=el("resp-orient");
   box.style.display="block";
   box.innerHTML='<h4>Lendo o que aconteceu…</h4><p class="digitando">montando a orientação<i></i><i></i><i></i></p>';
-  var sys="Você orienta alguém sobre como conduzir a próxima conversa com uma pessoa específica do trabalho.\n"+
-    "Ficha dessa pessoa, que é a leitura do usuário: "+p.nome+", "+p.papel+". "+p.desc+"\n"+
-    "Roda dela na ordem "+EIXOS.join(", ")+": "+p.roda.join(", ")+".\n"+
+  var sys=ctxUsuario()+"Você orienta alguém sobre como conduzir a próxima conversa com uma pessoa específica do trabalho.\n"+
+    ctxPessoa(p)+
     "Roda do usuário, mesma ordem: "+estado.roda.map(num).join(", ")+".\n"+
-    "Nota da relação entre os dois: "+p.relacao+"/10.\n"+
     'Devolva SOMENTE JSON: {"titulo":"","passos":[["01","",""],["02","",""],["03","",""],["04","",""]]}\n'+
     "Cada passo: [número, frase-título no imperativo, explicação curta ancorada num número da roda]. "+
     "Oriente o que o USUÁRIO faz, nunca como dobrar ou manipular a outra pessoa. Nunca diagnostique ninguém. Português do Brasil, direto.";
@@ -1350,7 +1473,7 @@ function fechaAtividade(a,resultado){
   var p=a.pessoa?estado.fichas[a.pessoa]:null;
   var saida=el("saida-"+a.id);
   saida.innerHTML='<p class="digitando" style="margin-top:10px">lendo seu retorno<i></i><i></i><i></i></p>';
-  var sys="Você fecha o ciclo de uma atividade de treino de comunicação. O usuário seguiu (ou não) uma orientação e está contando o resultado.\n"+
+  var sys=ctxUsuario()+"Você fecha o ciclo de uma atividade de treino de comunicação. O usuário seguiu (ou não) uma orientação e está contando o resultado.\n"+
     (p?("Pessoa envolvida: "+p.nome+", "+p.papel+". Nota atual da relação: "+p.relacao+"/10.\n"):"")+
     "Roda do usuário na ordem "+EIXOS.join(", ")+": "+estado.roda.map(num).join(", ")+".\n"+
     "Resultado declarado pelo usuário: "+resultado+".\n"+
@@ -1399,7 +1522,13 @@ function telaIndicacoes(){
     '<p class="sub">'+(estado.diagnosticoFeito||estado.cenas
       ?'Hoje seus pontos mais baixos são <strong>'+f.map(function(i){return EIXOS[i];}).join("</strong>, <strong>")+'</strong>. Tudo abaixo foi escolhido por causa disso.'
       :'Faça o diagnóstico ou treine uma cena para as indicações apontarem para o seu caso, e não para a média.')+'</p></div>'+
-    '<div class="acoes" style="margin-top:18px"><button class="btn" id="pedir-ia">Pedir uma leitura da IA</button>'+
+    '<div class="linha-pessoa"><div><label class="campo-rot" for="ind-pessoa" style="margin-top:0">Focar em alguém</label>'+
+      '<select id="ind-pessoa"><option value="">Minha roda em geral</option>'+
+      Object.keys(estado.fichas).map(function(i){
+        var f=estado.fichas[i];
+        return '<option value="'+i+'">lidar com '+esc(f.nome)+' — '+esc(f.papel)+'</option>';
+      }).join("")+'</select></div></div>'+
+    '<div class="acoes" style="margin-top:14px"><button class="btn" id="pedir-ia">Pedir uma leitura da IA</button>'+
     '<a class="btn-vazado" href="#/avaliacao">ver minha roda</a></div>'+
     '<div id="leitura-ia"></div>'+
     '<div id="grupos"></div>'+
@@ -1435,7 +1564,10 @@ function telaIndicacoes(){
     box.innerHTML='<p class="digitando" style="margin-top:16px">cruzando sua roda com o acervo<i></i><i></i><i></i></p>';
     var catalogo=ACERVO.map(function(it){ return it.id+" | "+rotuloTipo(it.tipo)+" | "+it.titulo+" ("+it.autor+") | competências: "+it.eixos.map(function(e){return EIXOS[e];}).join(", "); }).join("\n");
     var ultimas=estado.origens.slice(-5).map(function(o){return o.texto;}).join("; ");
-    var sys="Você recomenda material de estudo para alguém treinando comunicação no trabalho.\n"+
+    var pid=el("ind-pessoa")?el("ind-pessoa").value:"";
+    var pes=pid?estado.fichas[pid]:null;
+    var sys=ctxUsuario()+"Você recomenda material de estudo para alguém treinando comunicação no trabalho.\n"+
+      (pes?(ctxPessoa(pes)+"O foco é preparar o usuário para lidar melhor COM ESSA PESSOA. Cada escolha deve explicar isso.\n"):"")+
       "Roda dele na ordem "+EIXOS.join(", ")+": "+estado.roda.map(num).join(", ")+".\n"+
       (ultimas?("Últimas evidências: "+ultimas+"\n"):"")+
       "ACERVO DISPONÍVEL (escolha SOMENTE ids desta lista, nunca invente títulos):\n"+catalogo+"\n\n"+
@@ -1499,7 +1631,7 @@ function telaPreparacao(){
       var p=estado.preparacoes[k],d=document.createElement("div");
       d.className="atv";
       d.innerHTML='<div class="atv-topo"><div><h3>'+esc(p.titulo)+'</h3>'+
-        '<p class="mono cinza" style="margin:2px 0 0">'+esc(p.tipoNome)+'</p></div>'+
+        '<p class="mono cinza" style="margin:2px 0 0">'+esc(p.tipoNome)+(p.pessoaNome?' · '+esc(p.pessoaNome):'')+(p.projeto?' · '+esc(p.projeto):'')+'</p></div>'+
         '<span class="quando">'+dataBr(p.data)+'</span></div>'+
         '<div class="acoes"><button class="btn-pequeno" data-abrir="'+k+'">abrir plano</button></div>';
       d.querySelector("[data-abrir]").addEventListener("click",function(){ vai("#/plano/"+p.tipo+"/"+k); });
@@ -1575,12 +1707,16 @@ function planoHTML(p){
     '<ul style="margin:0;padding-left:20px;color:var(--texto-2)">'+(r.ensaiar||[]).map(function(x){return '<li style="margin-bottom:6px">'+esc(x)+'</li>';}).join("")+'</ul>'+
     (r.armadilha?'<div class="ressalva" style="margin-top:18px"><strong>Sua armadilha nesse tipo de conversa:</strong> '+esc(r.armadilha)+'</div>':'')+
     (r.frase?'<p class="citacao melhor" style="margin-top:18px">'+esc(r.frase)+'</p>':'')+
-    '<div class="acoes"><button class="btn" id="prep-atv">Deixar em aberto nas atividades</button></div></div>';
+    '<div class="acoes"><button class="btn" id="prep-atv">Deixar em aberto nas atividades</button>'+
+    (p.pessoa&&estado.fichas[p.pessoa]?'<button class="btn-vazado" id="prep-ensaiar">Ensaiar com '+esc(estado.fichas[p.pessoa].nome)+' →</button>':'')+
+    '</div></div>';
 }
 function ligaPlano(p){
+  var e=el("prep-ensaiar");
+  if(e) e.addEventListener("click",function(){ vai("#/treino/"+p.pessoa); });
   var b=el("prep-atv"); if(!b) return;
   b.addEventListener("click",function(){
-    criaAtividade({tipo:"preparacao",titulo:p.titulo,corpo:p.contexto,
+    criaAtividade({tipo:"preparacao",titulo:p.titulo,corpo:p.contexto,pessoa:p.pessoa||null,
       passos:(p.plano.roteiro||[]).slice(0,4)});
     b.disabled=true; b.textContent="está nas suas atividades";
   });
@@ -1698,7 +1834,10 @@ function telaConta(){
     '<div class="cartao" style="margin-top:20px"><h3>Seus dados</h3>'+
       '<p style="font-size:15.5px;color:var(--texto-2);margin:6px 0 0">Tudo o que você escreveu — roda, fichas, atividades, currículo — está guardado neste navegador e em nenhum outro lugar. Nada é enviado para a Antessala.</p>'+
       '<div class="acoes"><button class="btn-vazado" id="k-exportar">Baixar meus dados</button>'+
-      '<button class="btn-pequeno" id="k-apagar">apagar tudo</button></div></div>'+
+      '<button class="btn-vazado" id="k-importar-btn">Restaurar de um arquivo</button>'+
+      '<input type="file" id="k-importar" accept="application/json" style="display:none">'+
+      '<button class="btn-pequeno" id="k-apagar">apagar tudo</button></div>'+
+      '<p class="dica" style="margin-top:10px">Trocou de celular? Baixe aqui no antigo e restaure no novo.</p></div>'+
     '<div style="height:50px"></div></div>';
   var sit=k.situacao;
   function extra(){
@@ -1743,6 +1882,22 @@ function telaConta(){
     a.href=URL.createObjectURL(b); a.download="antessala-meus-dados.json"; a.click();
     setTimeout(function(){ URL.revokeObjectURL(a.href); },2000);
   });
+  el("k-importar-btn").addEventListener("click",function(){ el("k-importar").click(); });
+  el("k-importar").addEventListener("change",function(){
+    var arq=this.files&&this.files[0]; if(!arq) return;
+    var leitor=new FileReader();
+    leitor.onload=function(){
+      try{
+        var d=JSON.parse(leitor.result);
+        if(!d||!d.roda) throw new Error("arquivo não parece ser um backup da Antessala");
+        if(!confirm("Isso substitui tudo que está neste aparelho. Continuar?")) return;
+        estado=Object.assign(estado,d);
+        estado.conexao=Object.assign({endpoint:"",chave:"",modelo:""},d.conexao||{});
+        salva().then(function(){ toast("Dados restaurados."); vai("#/fichas"); });
+      }catch(e){ toast("Não consegui ler o arquivo: "+e.message); }
+    };
+    leitor.readAsText(arq);
+  });
   el("k-apagar").addEventListener("click",function(){ el("zerar-tudo").click(); });
   if(k.analise) mostraVagas(k.analise);
 }
@@ -1758,7 +1913,7 @@ function analisaPerfil(){
   var fichasTxt=Object.keys(estado.fichas).slice(0,4).map(function(i){
     var p=estado.fichas[i]; return p.papel+" (relação "+num(p.relacao)+"/10)";
   }).join("; ");
-  var sys="Você orienta a busca de emprego de alguém, cruzando o currículo com o perfil de comunicação medido num app de treino.\n"+
+  var sys=ctxUsuario()+"Você orienta a busca de emprego de alguém, cruzando o currículo com o perfil de comunicação medido num app de treino.\n"+
     "Roda de comunicação dele na ordem "+EIXOS.join(", ")+": "+estado.roda.map(num).join(", ")+" (escala 0 a 5).\n"+
     "Pontos mais fortes: "+estado.roda.map(function(v,i){return {v:v,i:i};}).sort(function(a,b){return b.v-a.v;}).slice(0,3).map(function(x){return EIXOS[x.i];}).join(", ")+".\n"+
     "Pontos mais fracos: "+fracos(3).map(function(i){return EIXOS[i];}).join(", ")+".\n"+
@@ -1821,8 +1976,8 @@ Store.ler(CHAVE).then(function(s){
     estado.atividades=s.atividades||[];
     estado.preparacoes=s.preparacoes||{};
   }
-  pintaIA(); render();
-}).catch(function(){ pintaIA(); render(); });
+  pintaIA(); render(); procuraServidor();
+}).catch(function(){ pintaIA(); render(); procuraServidor(); });
 })();
 
 </script>
