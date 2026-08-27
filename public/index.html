@@ -394,10 +394,10 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,va
     <label class="campo-rot" for="in-endpoint">Endereço do seu servidor</label>
     <input id="in-endpoint" type="text" placeholder="https://seu-servidor.com/api/antessala" autocomplete="off">
     <label class="campo-rot" for="in-chave">Ou uma chave da API, só para testar no seu aparelho</label>
-    <input id="in-chave" type="password" placeholder="sk-ant-… (Anthropic) ou AIza… (Google Gemini)" autocomplete="off">
-    <p class="dica" style="margin-top:6px">O app reconhece qual é pelo começo da chave. A do Gemini é gratuita e sai em ai.google.dev.</p>
+    <input id="in-chave" type="password" placeholder="AIzaSy… ou AQ.Ab8…" autocomplete="off">
+    <p class="dica" style="margin-top:6px">Chave do Google Gemini, criada em aistudio.google.com/app/apikey. Os dois formatos funcionam.</p>
     <label class="campo-rot" for="in-modelo">Modelo (deixe vazio para o app descobrir sozinho)</label>
-    <input id="in-modelo" type="text" placeholder="claude-sonnet-5" autocomplete="off">
+    <input id="in-modelo" type="text" placeholder="gemini-2.5-flash" autocomplete="off">
     <div class="nota-seg"><strong>Não publique o app com a chave colada aqui.</strong> Ela fica visível para qualquer pessoa que abrir o código da página.</div>
     </div>
     <div id="teste-ia"></div>
@@ -447,17 +447,23 @@ function salva(){ return Store.gravar(CHAVE,estado); }
 var IA={modo:"desconhecido"};
 /* Nomes de modelo mudam com o tempo e diferem entre o ambiente do Claude
    e a API pública. Em vez de fixar um, tento a lista e guardo o que funcionar. */
-var MODELOS_ANTHROPIC=["claude-sonnet-5","claude-sonnet-4-6","claude-opus-5","claude-haiku-4-5-20251001"];
-var MODELOS_GEMINI=["gemini-2.5-flash","gemini-flash-latest","gemini-2.5-flash-lite","gemini-2.0-flash"];
-function listaModelos(){ return ehGemini()?MODELOS_GEMINI:MODELOS_ANTHROPIC; }
-function modeloAtual(){
-  if(estado.conexao.modelo) return estado.conexao.modelo;
-  if(ehGemini()) return "gemini-2.5-flash";
-  return (estado.conexao.chave||endpointAtivo())?"claude-sonnet-5":"claude-sonnet-4-6";
-}
+var MODELOS_GEMINI=["gemini-2.5-flash","gemini-flash-latest","gemini-2.0-flash","gemini-2.5-flash-lite"];
+function listaModelos(){ return MODELOS_GEMINI; }
+function modeloAtual(){ return estado.conexao.modelo||"gemini-2.5-flash"; }
 /* O app fala com dois provedores. Chave do Google começa com AIza — dá para
    reconhecer sozinho e falar direto com o Gemini, sem servidor no meio. */
-function ehGemini(){ return /^AIza/.test(estado.conexao.chave||"") && !endpointAtivo(); }
+function ehGemini(){ return !!estado.conexao.chave && !endpointAtivo(); }
+/* quando a chave é colada direto no app, tento as três formas de autenticar */
+var AUTH_GEMINI=null;
+function formasAuth(chave){
+  var todas=[
+    {nome:"cabecalho",cab:{"x-goog-api-key":chave},query:""},
+    {nome:"query",cab:{},query:"?key="+encodeURIComponent(chave)},
+    {nome:"bearer",cab:{Authorization:"Bearer "+chave},query:""}
+  ];
+  if(!AUTH_GEMINI) return todas;
+  return todas.sort(function(a){ return a.nome===AUTH_GEMINI?-1:1; });
+}
 /* Quando o app está publicado junto com uma função de servidor (Vercel, Netlify
    Functions, Worker), ele acha o servidor sozinho em /api/antessala e você não
    precisa configurar nada na tela. */
@@ -477,9 +483,11 @@ function umaChamada(modelo,system,messages,maxTokens){
   if(endpointAtivo()){
     url=endpointAtivo();
     corpo={model:modelo,max_tokens:maxTokens||1000,system:system,messages:messages};
-  }else if(ehGemini()){
+  }else{
+    var forma=formasAuth(String(estado.conexao.chave||"").trim())[0];
     url="https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(modelo)+
-        ":generateContent?key="+encodeURIComponent(estado.conexao.chave);
+        ":generateContent"+forma.query;
+    Object.keys(forma.cab).forEach(function(k){ cab[k]=forma.cab[k]; });
     corpo={
       contents:messages.map(function(m){
         return {role:(m.role==="assistant"?"model":"user"),parts:[{text:String(m.content)}]};
@@ -487,14 +495,6 @@ function umaChamada(modelo,system,messages,maxTokens){
       generationConfig:{maxOutputTokens:Math.min(maxTokens||1000,4000),temperature:0.8}
     };
     if(system) corpo.system_instruction={parts:[{text:system}]};
-  }else{
-    url="https://api.anthropic.com/v1/messages";
-    if(estado.conexao.chave){
-      cab["x-api-key"]=estado.conexao.chave;
-      cab["anthropic-version"]="2023-06-01";
-      cab["anthropic-dangerous-direct-browser-access"]="true";
-    }
-    corpo={model:modelo,max_tokens:maxTokens||1000,system:system,messages:messages};
   }
   return fetch(url,{method:"POST",headers:cab,body:JSON.stringify(corpo)}).then(function(r){
     return r.text().then(function(txt){
@@ -533,6 +533,13 @@ function chamar(system,messages,maxTokens){
     }).catch(function(err){
       var modeloRuim=(err.status===404)||(err.status===400&&/model/i.test(err.message||""));
       if(modeloRuim) return tenta(i+1);
+      /* chave direta recusada: tenta a próxima forma de autenticar antes de desistir */
+      if(ehGemini()&&(err.status===401||err.status===403)){
+        var ordem=["cabecalho","query","bearer"];
+        var atual=AUTH_GEMINI||"cabecalho";
+        var prox=ordem[ordem.indexOf(atual)+1];
+        if(prox){ AUTH_GEMINI=prox; return tenta(i); }
+      }
       if(!endpointAtivo()&&!estado.conexao.chave){ IA.modo="offline"; pintaIA(); }
       throw err;
     });
@@ -544,7 +551,8 @@ function diagnostica(err){
   if(s===401) return "Chave recusada (401). Confira se copiou inteira, sem espaço no começo ou no fim.";
   if(s===400&&/credit|balance/i.test(m)) return "Sem crédito na conta (400). Coloque crédito em Billing no Console.";
   if(s===429) return "Muitas chamadas seguidas (429). Espere alguns segundos e tente de novo.";
-  if(s===404) return "Modelo não encontrado (404). O app já tentou os outros nomes — se persistir, escreva o nome do modelo no campo abaixo.";
+  if(s===404) return "Modelo não encontrado (404). O app já tentou os outros nomes do Gemini — se persistir, escreva o nome do modelo no campo abaixo.";
+  if(s===403) return "A chave existe mas não tem permissão (403). Gere outra em aistudio.google.com/app/apikey.";
   if(s>=500) return "Erro do lado do servidor ("+s+"). Tente de novo em alguns minutos.";
   if(!s&&/fetch|network|Failed/i.test(m)) return "O navegador bloqueou a chamada. Isso acontece quando o app está aberto como arquivo local ou dentro de um visualizador embutido — publique o site e tente por lá.";
   return m;
@@ -791,7 +799,7 @@ function ligaVoltar(escopo){
 
 /* ================= MODAL / CONEXÃO ================= */
 function pintaIA(){
-  var t={claude:"conectada aqui dentro do Claude",servidor:(AUTO_ENDPOINT&&!estado.conexao.endpoint?"conectada ao servidor deste site":"conectada ao seu servidor"),chave:(ehGemini()?"conectada ao Google Gemini":"conectada com chave da Anthropic"),
+  var t={claude:"conectada aqui dentro do Claude",servidor:(AUTO_ENDPOINT&&!estado.conexao.endpoint?"conectada ao servidor deste site":"conectada ao seu servidor"),chave:"conectada ao Google Gemini",
          offline:"sem conexão",desconhecido:"ainda não usada nesta sessão"}[IA.modo];
   var e=el("estado-ia"); if(e) e.innerHTML="Estado: <b>"+t+"</b>";
   el("btn-ia").classList.toggle("ligado",IA.modo!=="offline"&&IA.modo!=="desconhecido");

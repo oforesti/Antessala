@@ -1,42 +1,28 @@
 /*
-  Antessala — servidor em Cloudflare Workers.
+  Antessala — servidor em Cloudflare Workers. Gemini, ou a IA da própria Cloudflare.
 
-  Ele tenta três caminhos e usa o primeiro disponível:
-
-    1. Anthropic   — se você configurar ANTHROPIC_API_KEY.
-    2. Gemini      — se você configurar GEMINI_API_KEY.
-    3. Workers AI  — a IA da própria Cloudflare. NÃO precisa de chave nenhuma
-                     e não pede cartão. É por onde você começa.
+  Caminhos, na ordem:
+    1. GEMINI_API_KEY configurada  -> Google Gemini
+    2. binding Workers AI          -> IA da Cloudflare, sem chave e sem cartão
 
   ------------------------------------------------------------------
-  COMO SUBIR, TUDO PELO NAVEGADOR DO CELULAR (uns 5 minutos)
+  COMO SUBIR, TUDO PELO NAVEGADOR (uns 5 minutos)
   ------------------------------------------------------------------
-  1. Crie conta em dash.cloudflare.com. O plano gratuito não pede cartão.
-
+  1. dash.cloudflare.com -> conta gratuita, não pede cartão.
   2. Workers & Pages -> Create -> Start with Hello World -> Deploy.
-     Anote o endereço que aparecer, algo como
-     antessala.SEU-USUARIO.workers.dev
-
-  3. Abra o Worker -> Edit code. Apague tudo que estiver lá, cole ESTE
-     arquivo inteiro e clique em Deploy.
-
-  4. ESTE É O PASSO QUE LIGA A IA:
-     Settings -> Bindings -> Add -> Workers AI
-     Variable name:  AI      (exatamente assim, em maiúsculas)
-     Salve e faça Deploy de novo.
-
-  5. No app, ícone de conexão no topo:
-     Endereço do seu servidor:
-       https://antessala.SEU-USUARIO.workers.dev/api/antessala
-     Campo da chave: DEIXE VAZIO.
-     Toque em Testar conexão.
-
-  Depois, se quiser respostas melhores: Settings -> Variables and Secrets,
-  adicione GEMINI_API_KEY ou ANTHROPIC_API_KEY. O Worker passa a usar essa
-  sozinho, e você não mexe em nada no app.
+  3. Edit code -> apague tudo -> cole este arquivo -> Deploy.
+  4. Settings -> Variables and Secrets -> Add
+        Nome: GEMINI_API_KEY     Valor: sua chave      (marque Secret)
+     Ou, se preferir sem chave nenhuma:
+        Settings -> Bindings -> Add -> Workers AI, Variable name: AI
+     Faça Deploy de novo.
+  5. No app: Endereço do servidor =
+        https://SEU-WORKER.workers.dev/api/antessala
   ------------------------------------------------------------------
 */
 
+const BASE = "https://generativelanguage.googleapis.com/v1beta/models/";
+const MODELOS = ["gemini-2.5-flash", "gemini-flash-latest", "gemini-2.0-flash"];
 const MODELO_CF = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
 
 export default {
@@ -49,52 +35,39 @@ export default {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": liberada,
       "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Allow-Methods": "POST, OPTIONS"
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
     };
 
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cab });
 
     const url = new URL(request.url);
-    if (request.method !== "POST" || !url.pathname.startsWith("/api/antessala")) {
+    if (!url.pathname.startsWith("/api/antessala")) {
       return new Response(JSON.stringify({ error: { message: "rota não encontrada" } }), { status: 404, headers: cab });
     }
 
-    let pedido;
-    try {
-      pedido = await request.json();
-    } catch (e) {
-      return new Response(JSON.stringify({ error: { message: "corpo inválido" } }), { status: 400, headers: cab });
+    if (request.method === "GET") {
+      const provedor = env.GEMINI_API_KEY ? "gemini" : (env.AI ? "cloudflare" : "nenhum");
+      return new Response(JSON.stringify({ ok: provedor !== "nenhum", provedor }), { status: 200, headers: cab });
     }
 
+    if (request.method !== "POST") {
+      return new Response(JSON.stringify({ error: { message: "método não permitido" } }), { status: 405, headers: cab });
+    }
+
+    let pedido;
+    try { pedido = await request.json(); }
+    catch (e) { return new Response(JSON.stringify({ error: { message: "corpo inválido" } }), { status: 400, headers: cab }); }
+
     const maxTokens = Math.min(pedido.max_tokens || 1000, 4000);
-    const resposta = (texto) => new Response(
+    const ok = (texto) => new Response(
       JSON.stringify({ content: [{ type: "text", text: String(texto) }] }),
       { status: 200, headers: cab }
     );
 
     try {
-      /* ---------- 1. Anthropic, se houver chave ---------- */
-      if (env.ANTHROPIC_API_KEY) {
-        const r = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": env.ANTHROPIC_API_KEY,
-            "anthropic-version": "2023-06-01"
-          },
-          body: JSON.stringify({
-            model: pedido.model || "claude-sonnet-5",
-            max_tokens: maxTokens,
-            system: pedido.system,
-            messages: pedido.messages
-          })
-        });
-        return new Response(await r.text(), { status: r.status, headers: cab });
-      }
-
-      /* ---------- 2. Gemini, se houver chave ---------- */
+      /* ---------- Gemini ---------- */
       if (env.GEMINI_API_KEY) {
-        const modelo = env.GEMINI_MODEL || "gemini-2.5-flash";
+        const chave = String(env.GEMINI_API_KEY).trim();
         const corpo = {
           contents: (pedido.messages || []).map((m) => ({
             role: m.role === "assistant" ? "model" : "user",
@@ -104,56 +77,62 @@ export default {
         };
         if (pedido.system) corpo.system_instruction = { parts: [{ text: pedido.system }] };
 
-        const r = await fetch(
-          "https://generativelanguage.googleapis.com/v1beta/models/" +
-            encodeURIComponent(modelo) + ":generateContent?key=" + env.GEMINI_API_KEY,
-          { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(corpo) }
-        );
+        const formas = [
+          { cab: { "x-goog-api-key": chave }, query: "" },
+          { cab: {}, query: "?key=" + encodeURIComponent(chave) },
+          { cab: { Authorization: "Bearer " + chave }, query: "" }
+        ];
+        const falhas = [];
 
-        const texto = await r.text();
-        let dados = null;
-        try { dados = JSON.parse(texto); } catch (_) {}
+        for (const modelo of (env.GEMINI_MODEL ? [env.GEMINI_MODEL] : []).concat(MODELOS)) {
+          for (const forma of formas) {
+            const r = await fetch(BASE + encodeURIComponent(modelo) + ":generateContent" + forma.query, {
+              method: "POST",
+              headers: Object.assign({ "Content-Type": "application/json" }, forma.cab),
+              body: JSON.stringify(corpo)
+            });
+            const texto = await r.text();
+            let dados = null;
+            try { dados = JSON.parse(texto); } catch (_) {}
 
-        if (!r.ok) {
-          const msg = (dados && dados.error && dados.error.message) || texto.slice(0, 200);
-          return new Response(JSON.stringify({ error: { type: "gemini_error", message: msg } }), { status: r.status, headers: cab });
+            if (r.ok) {
+              const cand = (dados.candidates || [])[0] || {};
+              const partes = (cand.content && cand.content.parts) || [];
+              return ok(partes.map((p) => p.text || "").join(""));
+            }
+            falhas.push(modelo + ": " + r.status);
+            if (r.status === 404) break;
+            if (r.status !== 401 && r.status !== 403 && r.status !== 400) {
+              const msg = (dados && dados.error && dados.error.message) || texto.slice(0, 160);
+              return new Response(JSON.stringify({ error: { message: msg } }), { status: r.status, headers: cab });
+            }
+          }
         }
-
-        const partes = ((dados.candidates || [])[0] || {}).content;
-        const lista = (partes && partes.parts) || [];
-        return resposta(lista.map((p) => p.text || "").join(""));
+        return new Response(JSON.stringify({
+          error: { message: "Gemini recusou a chave em todas as tentativas: " + falhas.slice(0, 6).join(", ") }
+        }), { status: 401, headers: cab });
       }
 
-      /* ---------- 3. Workers AI: sem chave, sem cartão ---------- */
+      /* ---------- Workers AI, sem chave ---------- */
       if (env.AI) {
         const mensagens = [];
         if (pedido.system) mensagens.push({ role: "system", content: pedido.system });
         (pedido.messages || []).forEach((m) => {
-          mensagens.push({
-            role: m.role === "assistant" ? "assistant" : "user",
-            content: String(m.content)
-          });
+          mensagens.push({ role: m.role === "assistant" ? "assistant" : "user", content: String(m.content) });
         });
-
         const saida = await env.AI.run(env.CF_MODELO || MODELO_CF, {
-          messages: mensagens,
-          max_tokens: maxTokens,
-          temperature: 0.8
+          messages: mensagens, max_tokens: maxTokens, temperature: 0.8
         });
-
         const texto = (saida && (saida.response || saida.result || saida.text)) || "";
         if (!texto) {
-          return new Response(JSON.stringify({
-            error: { message: "Workers AI respondeu vazio. Confira o binding AI em Settings -> Bindings." }
-          }), { status: 502, headers: cab });
+          return new Response(JSON.stringify({ error: { message: "Workers AI respondeu vazio. Confira o binding AI." } }), { status: 502, headers: cab });
         }
-        return resposta(texto);
+        return ok(texto);
       }
 
       return new Response(JSON.stringify({
-        error: { message: "Nada configurado ainda. Vá em Settings -> Bindings -> Add -> Workers AI, com Variable name AI, e faça Deploy de novo." }
+        error: { message: "Nada configurado. Adicione GEMINI_API_KEY em Variables and Secrets, ou o binding Workers AI com o nome AI, e faça Deploy de novo." }
       }), { status: 500, headers: cab });
-
     } catch (e) {
       return new Response(JSON.stringify({ error: { message: String(e.message || e) } }), { status: 500, headers: cab });
     }

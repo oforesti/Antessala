@@ -1,37 +1,49 @@
 /*
-  Antessala — função de servidor (Vercel).
+  Antessala — função de servidor (Vercel). Somente Google Gemini.
 
-  A chave da IA fica aqui, lida de variável de ambiente, e nunca chega ao
-  navegador de quem usa o app.
+  A chave fica aqui, lida da variável de ambiente GEMINI_API_KEY, e nunca
+  chega ao navegador de quem usa o app.
 
-  Provedores, na ordem em que são escolhidos:
-    ANTHROPIC_API_KEY  -> Claude
-    GEMINI_API_KEY     -> Google Gemini
+  Sobre os formatos de chave: o AI Studio emite dois.
+     AIzaSy...   antigo, autentica pela query string
+     AQ.Ab8...   novo, autentica por cabeçalho
+  Esta função tenta as três formas possíveis e guarda a que funcionar.
 
-  Sobre as chaves do Gemini: existem dois formatos em circulação.
-    AIzaSy...   formato antigo, autentica pela query string
-    AQ.Ab8...   formato novo, autentica por cabeçalho
-  Esta função tenta os dois jeitos automaticamente e usa o que funcionar.
+  Sobre os modelos: se o modelo pedido não existir para a sua chave, ela tenta
+  os seguintes da lista automaticamente.
 
-  Local:     escreva a chave no .env.local
-  Produção:  Vercel -> Settings -> Environment Variables (e redeploy depois)
+  Local:     .env.local  ->  GEMINI_API_KEY=sua-chave
+  Produção:  Vercel -> Settings -> Environment Variables -> depois REDEPLOY
 */
 
-const MODELO_ANTHROPIC = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
-const MODELO_GEMINI = process.env.GEMINI_MODEL || "gemini-2.5-flash";
-const BASE_GEMINI = "https://generativelanguage.googleapis.com/v1beta/models/";
+const BASE = "https://generativelanguage.googleapis.com/v1beta/models/";
 
-/* guarda qual forma de autenticação deu certo, para não repetir tentativa */
-let jeitoQueFunciona = null;
+const MODELOS = (process.env.GEMINI_MODEL
+  ? [process.env.GEMINI_MODEL]
+  : []
+).concat([
+  "gemini-2.5-flash",
+  "gemini-flash-latest",
+  "gemini-2.0-flash",
+  "gemini-2.5-flash-lite"
+]);
 
-function jeitosDeAutenticar(chave) {
-  const lista = [
+/* memória curta do processo: evita repetir tentativa que já falhou */
+let authOk = null;
+let modeloOk = null;
+
+function formasDeAuth(chave) {
+  const todas = [
     { nome: "cabecalho", cab: { "x-goog-api-key": chave }, query: "" },
     { nome: "query", cab: {}, query: "?key=" + encodeURIComponent(chave) },
     { nome: "bearer", cab: { Authorization: "Bearer " + chave }, query: "" }
   ];
-  if (!jeitoQueFunciona) return lista;
-  return lista.sort((a) => (a.nome === jeitoQueFunciona ? -1 : 1));
+  return authOk ? todas.sort((a) => (a.nome === authOk ? -1 : 1)) : todas;
+}
+
+function listaModelos() {
+  const l = MODELOS.filter((m, i) => MODELOS.indexOf(m) === i);
+  return modeloOk ? [modeloOk].concat(l.filter((m) => m !== modeloOk)) : l;
 }
 
 export default async function handler(req, res) {
@@ -41,15 +53,14 @@ export default async function handler(req, res) {
 
   if (req.method === "OPTIONS") return res.status(204).end();
 
-  /* O app faz um GET aqui só para saber se existe servidor configurado.
-     Nunca devolvemos a chave, só se ela existe. */
+  /* o app faz um GET só para saber se há servidor configurado.
+     nunca devolvemos a chave, só se ela existe */
   if (req.method === "GET") {
-    const provedor = process.env.ANTHROPIC_API_KEY ? "anthropic"
-                   : (process.env.GEMINI_API_KEY ? "gemini" : "nenhum");
     return res.status(200).json({
-      ok: provedor !== "nenhum",
-      provedor,
-      auth: jeitoQueFunciona || "ainda não testado"
+      ok: !!process.env.GEMINI_API_KEY,
+      provedor: process.env.GEMINI_API_KEY ? "gemini" : "nenhum",
+      auth: authOk || "ainda não testado",
+      modelo: modeloOk || "ainda não testado"
     });
   }
 
@@ -57,52 +68,42 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: { message: "método não permitido" } });
   }
 
-  const pedido = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
-  const maxTokens = Math.min(pedido.max_tokens || 1000, 4000);
+  const chave = String(process.env.GEMINI_API_KEY || "").trim();
+  if (!chave) {
+    return res.status(500).json({
+      error: { message: "GEMINI_API_KEY não configurada. Cadastre em Settings -> Environment Variables e faça um deploy novo." }
+    });
+  }
+
+  let pedido;
+  try {
+    pedido = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
+  } catch (e) {
+    return res.status(400).json({ error: { message: "corpo inválido" } });
+  }
+
+  const corpo = {
+    contents: (pedido.messages || []).map((m) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: String(m.content) }]
+    })),
+    generationConfig: {
+      maxOutputTokens: Math.min(pedido.max_tokens || 1000, 4000),
+      temperature: 0.8
+    }
+  };
+  if (pedido.system) corpo.system_instruction = { parts: [{ text: pedido.system }] };
+
+  const falhas = [];
 
   try {
-    /* ---------------- Anthropic ---------------- */
-    if (process.env.ANTHROPIC_API_KEY) {
-      const r = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": process.env.ANTHROPIC_API_KEY,
-          "anthropic-version": "2023-06-01"
-        },
-        body: JSON.stringify({
-          model: MODELO_ANTHROPIC,
-          max_tokens: maxTokens,
-          system: pedido.system,
-          messages: pedido.messages
-        })
-      });
-      const texto = await r.text();
-      res.setHeader("Content-Type", "application/json");
-      return res.status(r.status).send(texto);
-    }
-
-    /* ---------------- Gemini ---------------- */
-    if (process.env.GEMINI_API_KEY) {
-      const chave = String(process.env.GEMINI_API_KEY).trim();
-
-      const corpo = {
-        contents: (pedido.messages || []).map((m) => ({
-          role: m.role === "assistant" ? "model" : "user",
-          parts: [{ text: String(m.content) }]
-        })),
-        generationConfig: { maxOutputTokens: maxTokens, temperature: 0.8 }
-      };
-      if (pedido.system) corpo.system_instruction = { parts: [{ text: pedido.system }] };
-
-      const falhas = [];
-
-      for (const jeito of jeitosDeAutenticar(chave)) {
+    for (const modelo of listaModelos()) {
+      for (const forma of formasDeAuth(chave)) {
         const r = await fetch(
-          BASE_GEMINI + encodeURIComponent(MODELO_GEMINI) + ":generateContent" + jeito.query,
+          BASE + encodeURIComponent(modelo) + ":generateContent" + forma.query,
           {
             method: "POST",
-            headers: Object.assign({ "Content-Type": "application/json" }, jeito.cab),
+            headers: Object.assign({ "Content-Type": "application/json" }, forma.cab),
             body: JSON.stringify(corpo)
           }
         );
@@ -112,37 +113,37 @@ export default async function handler(req, res) {
         try { dados = JSON.parse(texto); } catch (_) {}
 
         if (r.ok) {
-          jeitoQueFunciona = jeito.nome;
+          authOk = forma.nome;
+          modeloOk = modelo;
           const cand = (dados.candidates || [])[0] || {};
           const partes = (cand.content && cand.content.parts) || [];
           return res.status(200).json({
-            content: [{ type: "text", text: partes.map((p) => p.text || "").join("") }]
+            content: [{ type: "text", text: partes.map((p) => p.text || "").join("") }],
+            meta: { modelo, auth: forma.nome }
           });
         }
 
-        const msg = (dados && dados.error && dados.error.message) || texto.slice(0, 160);
-        falhas.push(jeito.nome + ": " + r.status + " " + msg);
+        const msg = (dados && dados.error && dados.error.message) || texto.slice(0, 140);
+        falhas.push(modelo + "/" + forma.nome + ": " + r.status + " " + msg);
 
-        /* erro que não é de autenticação não adianta tentar de outro jeito */
+        /* 404 é modelo inexistente: troca de modelo, não de autenticação */
+        if (r.status === 404) break;
+
+        /* erro que não é de credencial nem de modelo: devolve direto */
         if (r.status !== 401 && r.status !== 403 && r.status !== 400) {
           return res.status(r.status).json({ error: { type: "gemini_error", message: msg } });
         }
       }
-
-      return res.status(401).json({
-        error: {
-          type: "gemini_auth",
-          message:
-            "A chave do Gemini foi recusada nas três formas de autenticação. " +
-            "Chaves no formato AQ. às vezes não valem para a API REST do Generative Language — " +
-            "gere uma chave no formato AIzaSy em aistudio.google.com/app/apikey, ou use o Worker da Cloudflare, que não precisa de chave. " +
-            "Detalhe: " + falhas.join(" | ")
-        }
-      });
     }
 
-    return res.status(500).json({
-      error: { message: "Nenhuma chave configurada. Defina ANTHROPIC_API_KEY ou GEMINI_API_KEY nas variáveis de ambiente e faça um deploy novo." }
+    return res.status(401).json({
+      error: {
+        type: "gemini_auth",
+        message:
+          "O Gemini recusou a chave em todas as combinações de modelo e autenticação. " +
+          "Confira se a chave está inteira e sem espaços, e se foi criada em aistudio.google.com/app/apikey. " +
+          "Tentativas: " + falhas.slice(0, 6).join(" | ")
+      }
     });
   } catch (e) {
     return res.status(500).json({ error: { message: String(e.message || e) } });

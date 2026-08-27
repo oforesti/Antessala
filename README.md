@@ -34,10 +34,10 @@ cp .env.example .env.local
 Abra o `.env.local` e escreva a chave depois do `=`:
 
 ```
-ANTHROPIC_API_KEY=sk-ant-sua-chave-aqui
+GEMINI_API_KEY=sua-chave-aqui
 ```
 
-Ou, se preferir o Gemini, comente a linha da Anthropic e use `GEMINI_API_KEY=`.
+Serve tanto o formato antigo (`AIzaSy...`) quanto o novo (`AQ.Ab8...`). A função tenta as três formas de autenticação do Google e usa a que funcionar.
 
 O `.env.local` está no `.gitignore`. Ele fica só na sua máquina.
 
@@ -49,7 +49,7 @@ Settings → Environment Variables → Add
 
 | Key | Value | Environments |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | sua chave | Production, Preview, Development |
+| `GEMINI_API_KEY` | sua chave do Gemini | Production, Preview, Development |
 
 Depois de salvar, **faça um novo deploy** — variável nova não entra em deploy antigo.
 
@@ -67,7 +67,7 @@ Abre em `http://localhost:3000`. A função responde em `/api/antessala`.
 Para conferir se a chave foi lida, abra `http://localhost:3000/api/antessala` no navegador. Deve responder:
 
 ```json
-{"ok":true,"provedor":"anthropic"}
+{"ok":true,"provedor":"gemini"}
 ```
 
 Se vier `"provedor":"nenhum"`, a variável não chegou.
@@ -114,13 +114,15 @@ Isso significa:
 
 Para que os dados sigam a pessoa em qualquer aparelho, é preciso login e banco de dados — outra etapa, com custo e responsabilidade sobre dado pessoal de terceiros (as fichas falam sobre colegas). Vale fazer só quando houver assinantes.
 
-## Trocar de provedor depois
+## Modelos
 
-Só mexer na variável de ambiente e redeployar. O app não muda.
+O padrão é `gemini-2.5-flash`. Se ele não estiver disponível para a sua chave, a função tenta sozinha `gemini-flash-latest`, `gemini-2.0-flash` e `gemini-2.5-flash-lite`, nessa ordem, e passa a usar o que funcionar.
 
-- Claude: `ANTHROPIC_API_KEY` — melhor qualidade nas cenas e nas devolutivas
-- Gemini: `GEMINI_API_KEY` — tem faixa gratuita
-- Cloudflare Workers AI: use o `worker-cloudflare.js` do outro pacote, que não precisa de chave nenhuma
+Para fixar um, defina `GEMINI_MODEL`.
+
+## Alternativa sem chave
+
+O `worker-cloudflare.js` roda no Cloudflare Workers e aceita duas configurações: `GEMINI_API_KEY`, igual aqui, ou o binding Workers AI, que usa a IA da própria Cloudflare sem chave nenhuma. Útil se você ficar sem crédito no Google.
 
 ---
 

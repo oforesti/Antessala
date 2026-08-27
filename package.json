@@ -2,7 +2,7 @@
   "name": "antessala",
   "version": "1.0.0",
   "private": true,
-  "description": "Ensaie a conversa difícil antes de ter que ter.",
+  "description": "Ensaie a conversa difícil antes de ter que ter. Movido a Google Gemini.",
   "scripts": {
     "dev": "vercel dev",
     "deploy": "vercel --prod"
