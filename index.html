@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Antessala</title>
+<meta name="theme-color" content="#14211F">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Antessala">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --breu:#14211F;--breu-2:#1D2E2B;--linha-escura:#354744;
+  --sala:#F4F5F2;--musgo:#3F5E52;--latao:#C08A2E;--latao-claro:#D69C36;
+  --giz:#D9D6CD;--texto:#14211F;--texto-2:#54615D;--claro:#EDEFEB;--claro-2:#9BA8A3;--nevoa:#B9C4BF;
+  --vermelho:#A33A3A;
+  --display:"Bricolage Grotesque",system-ui,sans-serif;
+  --corpo:"Source Serif 4",Georgia,serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+  --ease:cubic-bezier(.2,.7,.3,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--sala);color:var(--texto);font-family:var(--corpo);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-wrap:break-word}
+h1,h2,h3{font-family:var(--display);font-weight:500;letter-spacing:-.02em;margin:0}
+h4{font-family:var(--display);font-size:20px;font-weight:500;margin:40px 0 14px;letter-spacing:-.01em}
+.wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+.wrap-estreito{max-width:740px;margin:0 auto;padding:0 22px}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.cinza{color:var(--texto-2)}
+a{color:inherit}
+
+.btn{font-family:var(--display);font-size:16px;font-weight:500;background:var(--latao);color:#14211F;border:none;border-radius:2px;padding:13px 24px;cursor:pointer;transition:background .3s var(--ease),transform .18s var(--ease)}
+.btn:hover{background:var(--latao-claro)}
+.btn:active{transform:translateY(1px)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn-vazado{font-family:var(--display);font-size:15px;background:none;border:1px solid var(--giz);color:var(--texto);border-radius:2px;padding:12px 18px;cursor:pointer;transition:border-color .3s,color .3s}
+.btn-vazado:hover{border-color:var(--texto-2)}
+.btn-vazado[disabled]{opacity:.45;cursor:not-allowed}
+.btn-pequeno{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;background:none;border:1px solid var(--giz);color:var(--texto-2);border-radius:2px;padding:7px 11px;cursor:pointer;transition:border-color .25s,color .25s}
+.btn-pequeno:hover{border-color:var(--latao);color:var(--latao)}
+a.btn,a.btn-vazado,a.btn-pequeno{display:inline-block;text-decoration:none}
+.aba{text-decoration:none}
+.escuro .btn-vazado{border-color:#465955;color:var(--claro)}
+.escuro .btn-vazado:hover{border-color:var(--claro)}
+:focus-visible{outline:2px solid var(--latao);outline-offset:3px}
+.acoes{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:14px}
+.dica{font-family:var(--mono);font-size:11px;color:var(--texto-2);letter-spacing:.04em}
+.erro{color:var(--vermelho);font-size:15px;margin-top:10px;display:none}
+.erro.aberto{display:block}
+.escuro .erro{color:#E39B9B}
+textarea,input,select{font-family:var(--corpo);font-size:16px;color:var(--texto);background:#fff;border:1px solid var(--giz);border-radius:2px;padding:13px 15px;width:100%}
+textarea:focus,input:focus,select:focus{outline:none;border-color:var(--latao);box-shadow:0 0 0 3px rgba(192,138,46,.14)}
+textarea{resize:vertical;min-height:92px;line-height:1.5}
+label.campo-rot{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--texto-2);margin:18px 0 6px}
+
+/* ---------- barra ---------- */
+.barra{background:rgba(244,245,242,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--giz);position:sticky;top:0;z-index:30;padding-top:env(safe-area-inset-top)}
+.barra-topo{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0}
+.lockup{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;flex:none}
+.logo-mark{width:22px;height:26px;display:block;flex:none}
+.logo-mark .frame{fill:none;stroke:currentColor;stroke-width:1.6}
+.logo-mark .folha{fill:var(--latao)}
+.lockup .nome{font-family:var(--display);font-size:17px;font-weight:600;letter-spacing:-.01em}
+.barra-dir{display:flex;align-items:center;gap:10px}
+.icone-btn{background:none;border:1px solid var(--giz);border-radius:2px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--texto-2);flex:none;transition:border-color .25s,color .25s}
+.icone-btn:hover,.icone-btn.ligado{border-color:var(--latao);color:var(--latao)}
+.abas{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-bottom:0}
+.abas::-webkit-scrollbar{display:none}
+.aba{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--texto-2);text-decoration:none;padding:11px 12px 12px;border-bottom:2px solid transparent;white-space:nowrap;transition:color .25s,border-color .25s;position:relative}
+.aba:hover{color:var(--latao)}
+.aba.ativa{color:var(--texto);border-color:var(--latao)}
+.aba .bolinha{display:inline-block;min-width:16px;height:16px;line-height:16px;text-align:center;border-radius:8px;background:var(--latao);color:#14211F;font-size:9.5px;margin-left:5px;padding:0 4px}
+.voltar{background:none;border:none;cursor:pointer;padding:0;margin:26px 0 16px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--texto-2)}
+.voltar:hover{color:var(--latao)}
+
+.tela{display:none;padding-bottom:80px}
+.tela.on{display:block}
+.cabecalho{padding:30px 0 4px}
+.cabecalho h1{font-size:clamp(26px,4.6vw,36px);margin:8px 0 12px}
+.cabecalho .sub{color:var(--texto-2);max-width:60ch;margin:0}
+
+/* ---------- cartões ---------- */
+.cartao{background:#fff;border:1px solid var(--giz);border-radius:3px;padding:20px}
+.cartao+.cartao{margin-top:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.card{background:#fff;border:1px solid var(--giz);border-radius:3px;padding:19px;text-align:left;cursor:pointer;font:inherit;color:inherit;transition:transform .22s var(--ease),box-shadow .22s var(--ease),border-color .22s var(--ease)}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(20,33,31,.09);border-color:rgba(192,138,46,.5)}
+.card h3{font-size:18px;margin:12px 0 3px}
+.card .papel{font-size:13.5px;color:var(--texto-2);font-style:italic;margin:0}
+.card .ler{margin:14px 0 0;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--latao)}
+.novo{border:1px dashed rgba(20,33,31,.28);background:transparent;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;min-height:220px}
+.novo h3{margin:0 0 6px}
+.novo p{font-size:13.5px;color:var(--texto-2);margin:0}
+.mais{font-family:var(--display);font-size:26px;color:var(--latao);line-height:1;margin-bottom:10px}
+.vazio{border:1px dashed var(--giz);border-radius:3px;padding:24px;color:var(--texto-2);font-size:15.5px}
+.tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--giz);color:var(--texto-2);padding:5px 9px;border-radius:2px;display:inline-block}
+.tag.forte{border-color:var(--latao);color:#8A6216}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.selo{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--texto-2);border:1px dashed var(--giz);padding:6px 10px;border-radius:2px;margin-top:12px}
+.selo b{color:var(--latao);font-weight:500}
+
+/* ---------- resolver (hero) ---------- */
+.hero{background:var(--breu);color:var(--claro);border-radius:3px;padding:34px;margin-top:26px}
+.hero h1{font-size:clamp(26px,4.4vw,38px);line-height:1.1;color:var(--claro);max-width:16ch}
+.hero h1 em{font-style:normal;color:var(--latao)}
+.hero .lede{color:var(--nevoa);margin:14px 0 0;max-width:56ch;font-size:17px}
+.hero label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--claro-2);margin:26px 0 10px}
+.hero textarea{background:var(--breu-2);border-color:var(--linha-escura);color:var(--claro);font-size:18px;min-height:118px}
+.hero textarea::placeholder{color:#6C7C77}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:22px}
+.chips .rotulo{width:100%;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#6C7C77;margin-bottom:4px}
+.chip{font-family:var(--corpo);font-size:14.5px;background:none;border:1px solid var(--linha-escura);color:var(--nevoa);border-radius:2px;padding:8px 13px;cursor:pointer;transition:border-color .3s,color .3s,transform .25s}
+.chip:hover{border-color:var(--latao);color:var(--latao);transform:translateY(-2px)}
+.painel{max-height:0;opacity:0;overflow:hidden;background:var(--breu-2);border-left:2px solid var(--latao);transition:max-height .7s var(--ease),opacity .5s var(--ease),margin-top .5s var(--ease),padding .5s var(--ease);padding:0 20px}
+.painel.aberto{max-height:520px;opacity:1;margin-top:20px;padding:20px}
+.painel .rot{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--latao);margin:0 0 10px}
+.painel p{margin:0 0 14px;color:#C8D2CE;font-size:16.5px}
+
+/* ---------- microfone ---------- */
+.mic{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;background:none;border:1px solid var(--giz);color:var(--texto-2);border-radius:2px;padding:11px 14px;cursor:pointer;transition:border-color .25s,color .25s,background .25s}
+.mic:hover{border-color:var(--latao);color:var(--latao)}
+.escuro .mic{border-color:#465955;color:var(--nevoa)}
+.mic.gravando{border-color:var(--vermelho);color:var(--vermelho)}
+.mic.gravando span.ponto{width:8px;height:8px;border-radius:50%;background:var(--vermelho);animation:pulsa 1s infinite}
+@keyframes pulsa{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* ---------- treino ---------- */
+.cena{margin:22px 0 0;border-top:1px solid var(--giz);padding-top:22px}
+.quem{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--breu);color:var(--latao);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:14px;font-weight:500;flex:none}
+.quem p{margin:0;font-size:15px;color:var(--texto-2)}
+.quem strong{display:block;font-family:var(--display);font-size:16px;font-weight:500;color:var(--texto)}
+.fala{margin-bottom:15px;opacity:0;transform:translateY(10px);animation:entra .55s var(--ease) forwards}
+@keyframes entra{to{opacity:1;transform:none}}
+.fala .bolha{padding:14px 17px;border-radius:2px;max-width:88%;font-size:16.5px}
+.fala.deles .bolha{background:var(--breu);color:var(--claro)}
+.fala.sua{display:flex;justify-content:flex-end}
+.fala.sua .bolha{background:none;border:1px solid var(--giz);color:var(--texto)}
+.marcado{background:rgba(192,138,46,.22);border-bottom:1px solid var(--latao);padding:1px 2px}
+.digitando{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--texto-2);margin-bottom:14px}
+.digitando i{display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--latao);margin-left:4px;animation:pisca 1.2s infinite}
+.digitando i:nth-child(2){animation-delay:.2s}.digitando i:nth-child(3){animation-delay:.4s}
+@keyframes pisca{0%,60%,100%{opacity:.25}30%{opacity:1}}
+.compositor{border-top:1px solid var(--giz);margin-top:22px;padding-top:18px}
+.compositor label{display:block;margin-bottom:9px;color:var(--texto-2)}
+.devolutiva{display:none;margin-top:38px}
+.devolutiva.aberta{display:block;animation:sobeleve .5s var(--ease) both}
+@keyframes sobeleve{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.dev-topo{border-top:2px solid var(--latao);padding-top:18px}
+.dev-topo .mono{color:#8A6216}
+.dev-topo h2{font-size:23px;margin:9px 0 6px}
+.bloco{border-top:1px solid var(--giz);padding:20px 0}
+.bloco h3{font-size:17px;margin-bottom:8px}
+.bloco p{margin:0 0 10px;color:var(--texto-2);font-size:16px}
+.citacao{font-size:17px;color:var(--texto);border-left:2px solid var(--giz);padding:4px 0 4px 15px;margin:0 0 12px}
+.melhor{border-left-color:var(--latao)}
+.notas{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+.nota .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--texto-2);display:flex;justify-content:space-between;gap:8px}
+.trilho{height:3px;background:var(--giz);margin-top:7px;position:relative;overflow:hidden}
+.barrinha{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--latao);transition:width 1s var(--ease)}
+.ganho{background:var(--claro);border-radius:3px;padding:16px 18px;margin-top:14px}
+.ganho .par{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:15px;border-bottom:1px solid var(--giz)}
+.ganho .par:last-child{border:none}
+.ganho .par b{font-family:var(--mono);font-size:11.5px;color:var(--latao);font-weight:500}
+
+/* ---------- radar ---------- */
+.radar{width:100%;height:auto;display:block}
+.aro{fill:none;stroke:rgba(20,33,31,.11);stroke-width:1}
+.eixo{stroke:rgba(20,33,31,.13);stroke-width:1}
+.escuro .aro,.escuro .eixo{stroke:rgba(217,214,205,.16)}
+.rot{font-family:var(--mono);font-size:8.5px;letter-spacing:.04em;fill:#6b7975}
+.poly-voce{fill:rgba(192,138,46,.16);stroke:var(--latao);stroke-width:2;stroke-dasharray:4 3}
+.poly-outro{fill:rgba(63,94,82,.13);stroke:var(--musgo);stroke-width:2}
+.poly-cheia{fill:rgba(192,138,46,.22);stroke:var(--latao);stroke-width:2}
+.poly-antes{fill:none;stroke:var(--musgo);stroke-width:1.5;stroke-dasharray:4 4;opacity:.75}
+.marca-atrito{fill:none;stroke:var(--latao);stroke-width:1.5;opacity:.85}
+.dcabeca{display:grid;grid-template-columns:1fr 320px;gap:40px;align-items:start}
+.dcabeca h2{font-size:32px;margin:6px 0 8px}
+.dpapel{font-style:italic;color:var(--texto-2);margin:0 0 16px}
+.legenda{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--texto-2)}
+.leg i{width:16px;height:0;border-top:2px solid var(--musgo);display:block}
+.leg.v i{border-top:2px dashed var(--latao)}
+.ressalva{border-left:2px solid var(--latao);padding:9px 0 9px 13px;font-size:14px;color:#4a5a56;margin:18px 0 0}
+.ressalva strong{font-weight:600;color:var(--texto)}
+.barras{max-width:64ch}
+.barra-item{padding:11px 0;border-top:1px solid var(--giz)}
+.barra-item .k{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--texto-2);gap:10px}
+.barra-item .k b{color:var(--texto);font-weight:500}
+
+/* ---------- listas ---------- */
+.leitura{list-style:none;padding:0;max-width:62ch}
+.leitura li{padding:13px 0;border-top:1px solid var(--giz);display:grid;grid-template-columns:26px 1fr;gap:12px}
+.leitura li:last-child{border-bottom:1px solid var(--giz)}
+.leitura b{font-family:var(--mono);font-size:11px;color:var(--latao);font-weight:500;padding-top:5px}
+.atrito{background:var(--claro);border-radius:3px;padding:20px 22px;margin-top:14px;max-width:62ch}
+.atrito .par{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--giz);font-size:14.5px}
+.atrito .par:last-of-type{border:none}
+.atrito .par span:last-child{font-family:var(--mono);font-size:11.5px;color:var(--texto-2)}
+.acao{display:grid;grid-template-columns:26px 1fr;gap:12px;padding:14px 0;border-top:1px solid var(--giz)}
+.acao b{font-family:var(--mono);font-size:11px;color:var(--latao);font-weight:500;padding-top:5px}
+.acao em{font-style:italic;color:#3a4a46}
+.linha-tempo{list-style:none;padding:0;max-width:64ch}
+.linha-tempo li{border-top:1px solid var(--giz);padding:14px 0;display:grid;grid-template-columns:104px 1fr;gap:14px;font-size:15.5px}
+.linha-tempo li:last-child{border-bottom:1px solid var(--giz)}
+.linha-tempo time{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--texto-2);text-transform:uppercase;padding-top:4px}
+.linha-tempo .delta{font-family:var(--mono);font-size:11.5px;color:var(--latao)}
+.fecho{margin-top:20px;background:var(--breu);color:var(--claro);border-radius:3px;padding:20px 22px}
+.fecho p{font-size:15.5px;color:var(--nevoa);margin:0 0 12px}
+.apagar{background:none;border:none;color:var(--vermelho);font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:0;margin-top:12px}
+.apagar:hover{text-decoration:underline}
+
+/* ---------- relação ---------- */
+.relacao{background:var(--claro);border-radius:3px;padding:20px 22px;margin-top:14px}
+.relacao-topo{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.relacao .valor{font-family:var(--display);font-size:42px;line-height:1;color:var(--latao)}
+.relacao .valor small{font-size:16px;color:var(--texto-2)}
+.escadinha{display:flex;gap:3px;margin-top:12px}
+.escadinha i{flex:1;height:8px;background:var(--giz);border-radius:1px}
+.escadinha i.on{background:var(--latao)}
+input[type=range]{width:100%;accent-color:var(--latao);padding:0;border:none;background:none}
+.caixa-nota{margin-top:14px}
+.opcoes-linha{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.escolha{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--giz);background:#fff;color:var(--texto-2);padding:8px 11px;border-radius:2px;cursor:pointer}
+.escolha.ativa{border-color:var(--latao);color:#8A6216;background:rgba(192,138,46,.08)}
+
+/* ---------- atividades ---------- */
+.atv{border:1px solid var(--giz);border-radius:3px;background:#fff;padding:18px 20px;margin-bottom:12px}
+.atv.feita{background:transparent;border-style:dashed}
+.atv-topo{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.atv h3{font-size:17.5px;margin-bottom:3px}
+.atv .quando{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--texto-2);white-space:nowrap}
+.atv .corpo{margin-top:10px;font-size:15.5px;color:var(--texto-2)}
+.atv .feedback{margin-top:12px;border-top:1px solid var(--giz);padding-top:12px}
+.atv .feedback p{margin:0;font-size:15px}
+.filtros{display:flex;gap:8px;margin:20px 0 18px;flex-wrap:wrap}
+
+/* ---------- indicações ---------- */
+.item{border-top:1px solid var(--giz);padding:16px 0;display:grid;grid-template-columns:1fr auto;gap:14px;align-items:start}
+.item h3{font-size:18px;margin-bottom:2px}
+.item .aut{font-size:14.5px;color:var(--texto-2);font-style:italic}
+.item .pq{margin:8px 0 0;font-size:15.5px;color:var(--texto-2)}
+.item .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.item-acoes{display:flex;flex-direction:column;gap:7px;align-items:stretch}
+.grupo-titulo{display:flex;align-items:baseline;gap:10px;margin:36px 0 0}
+.grupo-titulo h4{margin:0}
+.grupo-titulo span{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--texto-2)}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--breu);color:var(--claro);
+  font-family:var(--mono);font-size:11px;letter-spacing:.06em;padding:12px 18px;border-radius:2px;z-index:80;
+  opacity:0;pointer-events:none;transition:opacity .3s var(--ease),transform .3s var(--ease);max-width:90vw;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- modal ---------- */
+.modal{position:fixed;inset:0;background:rgba(20,33,31,.6);display:none;align-items:center;justify-content:center;padding:18px;z-index:60}
+.modal.on{display:flex}
+.modal-caixa{background:var(--sala);border-radius:3px;max-width:540px;width:100%;padding:26px;max-height:88vh;overflow:auto}
+.modal-caixa h3{font-size:21px;margin-bottom:10px}
+.modal-caixa p{font-size:15px;color:var(--texto-2);margin:0 0 8px}
+.nota-seg{font-size:13.5px;color:#4a5a56;border-left:2px solid var(--latao);padding:8px 0 8px 12px;margin-top:16px}
+.estado-ia{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--texto-2);margin-top:14px}
+.estado-ia b{color:var(--latao);font-weight:500}
+
+/* ---------- diagnóstico ---------- */
+.progresso{height:2px;background:var(--giz);margin:22px 0 26px;position:relative}
+.progresso i{position:absolute;left:0;top:0;bottom:0;background:var(--latao);width:0;transition:width .4s var(--ease)}
+.afirmacao{font-family:var(--display);font-size:25px;line-height:1.25;margin:0 0 22px}
+.escala{display:grid;gap:8px;max-width:520px}
+.op{text-align:left;background:#fff;border:1px solid var(--giz);border-radius:2px;padding:13px 15px;font:inherit;font-size:16px;color:var(--texto);cursor:pointer;transition:border-color .2s,transform .2s}
+.op:hover{border-color:var(--latao);transform:translateX(3px)}
+.op b{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--latao);margin-right:10px}
+
+/* ---------- limite ---------- */
+.limite{max-width:640px}
+.limite h1{font-size:29px;margin:12px 0 14px}
+.limite p,.limite li{color:var(--texto-2)}
+.limite ul{padding-left:20px}
+.limite li{margin-bottom:9px}
+
+@media (max-width:820px){
+  .dcabeca{grid-template-columns:1fr;gap:24px}
+  .dcabeca .radar-box{order:-1;max-width:320px}
+  .hero{padding:26px}
+  .item{grid-template-columns:1fr}
+  .item-acoes{flex-direction:row;flex-wrap:wrap}
+  .linha-tempo li{grid-template-columns:1fr;gap:4px}
+  .afirmacao{font-size:21px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .fala,.devolutiva.aberta{opacity:1;transform:none;animation:none}
+  .card:hover,.chip:hover,.op:hover{transform:none}
+  .digitando i,.mic.gravando span.ponto{animation:none}
+}
+</style>
+</head>
+<body>
+
+<header class="barra">
+  <div class="wrap">
+    <div class="barra-topo">
+      <a class="lockup" href="#/resolver">
+        <svg class="logo-mark" viewBox="0 0 26 30" aria-hidden="true">
+          <rect class="frame" x="2.8" y="2.8" width="18.4" height="24.4" rx="1"/>
+          <path class="folha" d="M21.2 3.6 L21.2 26.4 L14 23.4 L14 6.6 Z"/>
+        </svg>
+        <span class="nome">Antessala</span>
+      </a>
+      <div class="barra-dir">
+        <span class="mono cinza" id="etapa"></span>
+        <button class="icone-btn" id="btn-ia" title="Conexão da IA" aria-label="Conexão da IA">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 1v4M10 1v4M4 5h8v4a4 4 0 0 1-8 0V5ZM8 13v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </div>
+    <nav class="abas" id="abas">
+      <a class="aba" href="#/resolver" data-aba="resolver">Resolver</a>
+      <a class="aba" href="#/fichas" data-aba="fichas">Fichas</a>
+      <a class="aba" href="#/preparacao" data-aba="preparacao">Preparação</a>
+      <a class="aba" href="#/atividades" data-aba="atividades">Atividades<span class="bolinha" id="badge-atv" style="display:none">0</span></a>
+      <a class="aba" href="#/indicacoes" data-aba="indicacoes">Indicações</a>
+      <a class="aba" href="#/avaliacao" data-aba="avaliacao">Avaliação</a>
+      <a class="aba" href="#/conta" data-aba="conta">Conta</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="tela" id="tela-resolver"></div>
+  <div class="tela" id="tela-treino"></div>
+  <div class="tela" id="tela-fichas"></div>
+  <div class="tela" id="tela-ficha"></div>
+  <div class="tela" id="tela-preparacao"></div>
+  <div class="tela" id="tela-plano"></div>
+  <div class="tela" id="tela-atividades"></div>
+  <div class="tela" id="tela-indicacoes"></div>
+  <div class="tela" id="tela-avaliacao"></div>
+  <div class="tela" id="tela-diagnostico"></div>
+  <div class="tela" id="tela-conta"></div>
+  <div class="tela" id="tela-limite"></div>
+</main>
+
+<div class="modal" id="modal-ia" role="dialog" aria-modal="true">
+  <div class="modal-caixa">
+    <h3>Conexão da IA</h3>
+    <p>É a IA que monta as cenas, escreve as devolutivas e lê o seu currículo. Dentro do Claude ela já vem ligada. Publicado em outro lugar, aponte para o seu servidor.</p>
+    <p class="estado-ia" id="estado-ia"></p>
+    <div class="nota-seg" style="margin:14px 0 0"><strong>Sem cartão e sem chave:</strong> suba o arquivo <em>worker-cloudflare.js</em> no Cloudflare Workers (plano gratuito), ligue o binding Workers AI e cole aqui embaixo o endereço dele terminando em <em>/api/antessala</em>. O passo a passo está escrito dentro do próprio arquivo.</div>
+    <label class="campo-rot" for="in-endpoint">Endereço do seu servidor</label>
+    <input id="in-endpoint" type="text" placeholder="https://seu-servidor.com/api/antessala" autocomplete="off">
+    <label class="campo-rot" for="in-chave">Ou uma chave da API, só para testar no seu aparelho</label>
+    <input id="in-chave" type="password" placeholder="sk-ant-… (Anthropic) ou AIza… (Google Gemini)" autocomplete="off">
+    <p class="dica" style="margin-top:6px">O app reconhece qual é pelo começo da chave. A do Gemini é gratuita e sai em ai.google.dev.</p>
+    <label class="campo-rot" for="in-modelo">Modelo (deixe vazio para o app descobrir sozinho)</label>
+    <input id="in-modelo" type="text" placeholder="claude-sonnet-5" autocomplete="off">
+    <div class="nota-seg"><strong>Não publique o app com a chave colada aqui.</strong> Ela fica visível para qualquer pessoa que abrir o código da página.</div>
+    <div id="teste-ia"></div>
+    <div class="acoes">
+      <button class="btn" id="salvar-ia">Salvar</button>
+      <button class="btn-vazado" id="testar-ia">Testar conexão</button>
+      <button class="btn-vazado" id="fechar-ia">Fechar</button>
+      <button class="btn-vazado" id="zerar-tudo">Apagar meus dados</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var reduz=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+var EIXOS=["assertividade","firmeza sob pressão","discordar bem","iniciativa","clareza","escuta","tom escrito","objetividade"];
+
+/* ================= ARMAZENAMENTO ================= */
+var memoria={};
+var Store={
+  ler:function(c){
+    if(window.storage&&window.storage.get)
+      return window.storage.get(c).then(function(r){return r&&r.value?JSON.parse(r.value):null;}).catch(function(){return null;});
+    return Promise.resolve().then(function(){
+      try{var v=localStorage.getItem(c);return v?JSON.parse(v):null;}catch(e){return memoria[c]||null;}
+    });
+  },
+  gravar:function(c,v){
+    var t=JSON.stringify(v); memoria[c]=v;
+    if(window.storage&&window.storage.set) return window.storage.set(c,t).catch(function(){});
+    return Promise.resolve().then(function(){try{localStorage.setItem(c,t);}catch(e){}});
+  }
+};
+var CHAVE="antessala:estado:v2";
+var estado={
+  roda:[2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5],
+  entrada:null, diagnosticoFeito:false, origens:[],
+  fichas:{}, atividades:[], indicados:{}, preparacoes:{},
+  cenas:0, refeitas:0,
+  conta:{nome:"",idade:"",situacao:"",empresa:"",cargo:"",curriculo:"",analise:null},
+  conexao:{endpoint:"",chave:"",modelo:""}
+};
+function salva(){ return Store.gravar(CHAVE,estado); }
+
+/* ================= IA ================= */
+var IA={modo:"desconhecido"};
+/* Nomes de modelo mudam com o tempo e diferem entre o ambiente do Claude
+   e a API pública. Em vez de fixar um, tento a lista e guardo o que funcionar. */
+var MODELOS_ANTHROPIC=["claude-sonnet-5","claude-sonnet-4-6","claude-opus-5","claude-haiku-4-5-20251001"];
+var MODELOS_GEMINI=["gemini-2.5-flash","gemini-flash-latest","gemini-2.5-flash-lite","gemini-2.0-flash"];
+function listaModelos(){ return ehGemini()?MODELOS_GEMINI:MODELOS_ANTHROPIC; }
+function modeloAtual(){
+  if(estado.conexao.modelo) return estado.conexao.modelo;
+  if(ehGemini()) return "gemini-2.5-flash";
+  return (estado.conexao.chave||estado.conexao.endpoint)?"claude-sonnet-5":"claude-sonnet-4-6";
+}
+/* O app fala com dois provedores. Chave do Google começa com AIza — dá para
+   reconhecer sozinho e falar direto com o Gemini, sem servidor no meio. */
+function ehGemini(){ return /^AIza/.test(estado.conexao.chave||"") && !estado.conexao.endpoint; }
+function umaChamada(modelo,system,messages,maxTokens){
+  var url,cab={"Content-Type":"application/json"},corpo;
+  if(estado.conexao.endpoint){
+    url=estado.conexao.endpoint;
+    corpo={model:modelo,max_tokens:maxTokens||1000,system:system,messages:messages};
+  }else if(ehGemini()){
+    url="https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(modelo)+
+        ":generateContent?key="+encodeURIComponent(estado.conexao.chave);
+    corpo={
+      contents:messages.map(function(m){
+        return {role:(m.role==="assistant"?"model":"user"),parts:[{text:String(m.content)}]};
+      }),
+      generationConfig:{maxOutputTokens:Math.min(maxTokens||1000,4000),temperature:0.8}
+    };
+    if(system) corpo.system_instruction={parts:[{text:system}]};
+  }else{
+    url="https://api.anthropic.com/v1/messages";
+    if(estado.conexao.chave){
+      cab["x-api-key"]=estado.conexao.chave;
+      cab["anthropic-version"]="2023-06-01";
+      cab["anthropic-dangerous-direct-browser-access"]="true";
+    }
+    corpo={model:modelo,max_tokens:maxTokens||1000,system:system,messages:messages};
+  }
+  return fetch(url,{method:"POST",headers:cab,body:JSON.stringify(corpo)}).then(function(r){
+    return r.text().then(function(txt){
+      var d=null; try{ d=JSON.parse(txt); }catch(_e){}
+      if(!r.ok){
+        var msg=(d&&d.error&&d.error.message)||txt.slice(0,180)||("HTTP "+r.status);
+        var err=new Error(msg); err.status=r.status;
+        err.tipo=(d&&d.error&&d.error.type)||"";
+        throw err;
+      }
+      return d;
+    });
+  });
+}
+/* a resposta do Gemini tem outro formato; normalizo aqui */
+function textoDaResposta(d){
+  if(d&&d.content) return (d.content||[]).map(function(b){return b.type==="text"?b.text:"";}).join("").trim();
+  var c=(d&&d.candidates||[])[0],partes=(c&&c.content&&c.content.parts)||[];
+  return partes.map(function(p){return p.text||"";}).join("").trim();
+}
+function chamar(system,messages,maxTokens){
+  var tentados=[],lista=[modeloAtual()].concat(listaModelos().filter(function(m){return m!==modeloAtual();}));
+  function tenta(i){
+    if(i>=lista.length){
+      var e=new Error("Nenhum modelo aceito. Tentei: "+tentados.join(", ")+". Verifique o nome do modelo na conexão.");
+      return Promise.reject(e);
+    }
+    tentados.push(lista[i]);
+    return umaChamada(lista[i],system,messages,maxTokens).then(function(d){
+      if(estado.conexao.modelo!==lista[i]&&(estado.conexao.chave||estado.conexao.endpoint)){
+        estado.conexao.modelo=lista[i]; salva();
+      }
+      IA.modo=estado.conexao.endpoint?"servidor":(estado.conexao.chave?"chave":"claude");
+      pintaIA();
+      return textoDaResposta(d);
+    }).catch(function(err){
+      var modeloRuim=(err.status===404)||(err.status===400&&/model/i.test(err.message||""));
+      if(modeloRuim) return tenta(i+1);
+      if(!estado.conexao.endpoint&&!estado.conexao.chave){ IA.modo="offline"; pintaIA(); }
+      throw err;
+    });
+  }
+  return tenta(0);
+}
+function diagnostica(err){
+  var s=err.status,m=err.message||"";
+  if(s===401) return "Chave recusada (401). Confira se copiou inteira, sem espaço no começo ou no fim.";
+  if(s===400&&/credit|balance/i.test(m)) return "Sem crédito na conta (400). Coloque crédito em Billing no Console.";
+  if(s===429) return "Muitas chamadas seguidas (429). Espere alguns segundos e tente de novo.";
+  if(s===404) return "Modelo não encontrado (404). O app já tentou os outros nomes — se persistir, escreva o nome do modelo no campo abaixo.";
+  if(s>=500) return "Erro do lado do servidor ("+s+"). Tente de novo em alguns minutos.";
+  if(!s&&/fetch|network|Failed/i.test(m)) return "O navegador bloqueou a chamada. Isso acontece quando o app está aberto como arquivo local ou dentro de um visualizador embutido — publique o site e tente por lá.";
+  return m;
+}
+/* Modelos mais simples às vezes devolvem o JSON com sujeira em volta,
+   vírgula sobrando ou aspas erradas. Limpo antes de desistir. */
+function comoJSON(t){
+  t=String(t||"").replace(/```json|```/g,"").trim();
+  var i=t.indexOf("{"),f=t.lastIndexOf("}");
+  if(i>=0&&f>i) t=t.slice(i,f+1);
+  try{ return JSON.parse(t); }catch(e){}
+  var limpo=t
+    .replace(/,\s*([}\]])/g,"$1")
+    .replace(/[\u201C\u201D]/g,'"')
+    .replace(/\n/g," ");
+  try{ return JSON.parse(limpo); }catch(e2){}
+  throw new Error("A IA respondeu num formato que não consegui ler. Tente de novo — com modelos mais simples isso acontece de vez em quando.");
+}
+var TERMOS=["assédio","assedio","assediou","importunação","me passou a mão","estupro","estuprou","abuso sexual",
+"me bateu","agrediu","agressão física","ameaça de morte","ameaçou me matar","me ameaçou de morte",
+"racismo","racista","injúria racial","homofob","transfob","gordofob","xenofob","capacitismo",
+"me matar","suicídio","suicidio","não quero mais viver","nao quero mais viver","me cortar","automutilação"];
+function ehLimite(t){ var s=" "+String(t||"").toLowerCase()+" "; return TERMOS.some(function(k){return s.indexOf(k)>=0;}); }
+
+/* ================= UTILIDADES ================= */
+function esc(t){ return String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function num(v){ return (Math.round(v*10)/10).toFixed(1).replace(".",","); }
+function hoje(){ return new Date().toISOString().slice(0,10); }
+function dataBr(iso){ var p=String(iso||hoje()).split("-"); return p[2]+"/"+p[1]; }
+function uid(p){ return (p||"x")+Date.now().toString(36)+Math.floor(Math.random()*900+100).toString(36); }
+function idxEixo(n){
+  n=String(n||"").toLowerCase().trim();
+  for(var i=0;i<EIXOS.length;i++) if(EIXOS[i]===n) return i;
+  for(var j=0;j<EIXOS.length;j++) if(n.indexOf(EIXOS[j].split(" ")[0])>=0) return j;
+  return -1;
+}
+function fracos(q){
+  return estado.roda.map(function(v,i){return {i:i,v:v};})
+    .sort(function(a,b){return a.v-b.v;}).slice(0,q||3).map(function(x){return x.i;});
+}
+function busca(q){ return "https://www.google.com/search?q="+encodeURIComponent(q); }
+function buscaVideo(q){ return "https://www.youtube.com/results?search_query="+encodeURIComponent(q); }
+
+/* ================= RADAR ================= */
+function pts(v,cx,cy,r){
+  return v.map(function(x,i){
+    var a=-Math.PI/2+i*2*Math.PI/v.length,d=(Math.max(0,Math.min(5,x))/5)*r;
+    return [cx+Math.cos(a)*d,cy+Math.sin(a)*d];
+  });
+}
+function desenha(svg,o){
+  if(!svg) return;
+  var cx=120,cy=120,r=o.rotulos?74:80,n=EIXOS.length,s="";
+  [1,.75,.5,.25].forEach(function(f){ s+='<polygon class="aro" points="'+pts(Array(n).fill(5*f),cx,cy,r).map(function(p){return p.join(",");}).join(" ")+'"/>'; });
+  pts(Array(n).fill(5),cx,cy,r).forEach(function(p){ s+='<line class="eixo" x1="'+cx+'" y1="'+cy+'" x2="'+p[0]+'" y2="'+p[1]+'"/>'; });
+  if(o.rotulos) pts(Array(n).fill(5),cx,cy,r+24).forEach(function(p,i){
+    var a=p[0]>cx+6?"start":(p[0]<cx-6?"end":"middle");
+    s+='<text class="rot" x="'+p[0]+'" y="'+(p[1]+3)+'" text-anchor="'+a+'">'+EIXOS[i]+'</text>';
+  });
+  if(o.antes) s+='<polygon class="poly-antes" points="'+pts(o.antes,cx,cy,r).map(function(p){return p.join(",");}).join(" ")+'"/>';
+  if(o.vals2) s+='<polygon class="'+o.classe2+'" points="'+pts(o.vals2,cx,cy,r).map(function(p){return p.join(",");}).join(" ")+'"/>';
+  s+='<polygon class="'+o.classe+'" points="'+pts(o.vals,cx,cy,r).map(function(p){return p.join(",");}).join(" ")+'"/>';
+  if(o.atrito){ var q=pts(o.vals,cx,cy,r); o.atrito.forEach(function(i){ if(q[i]) s+='<circle class="marca-atrito" cx="'+q[i][0]+'" cy="'+q[i][1]+'" r="6"/>'; }); }
+  svg.innerHTML=s;
+}
+
+/* ================= ÁUDIO (ditado) ================= */
+var Rec=window.SpeechRecognition||window.webkitSpeechRecognition;
+function temDitado(){ return !!Rec; }
+function ligaDitado(botao,area,aoFim){
+  if(!Rec){ alert("Este navegador não faz ditado por voz. Chrome no Android ou no computador funciona. Você pode escrever normalmente."); return null; }
+  var r=new Rec();
+  r.lang="pt-BR"; r.continuous=true; r.interimResults=true;
+  var base=area.value?area.value+" ":"";
+  r.onresult=function(e){
+    var txt="";
+    for(var i=0;i<e.results.length;i++) txt+=e.results[i][0].transcript;
+    area.value=base+txt;
+    area.dispatchEvent(new Event("input"));
+  };
+  r.onerror=function(){ parar(); };
+  r.onend=function(){ parar(); };
+  function parar(){
+    botao.classList.remove("gravando");
+    botao.innerHTML='<span aria-hidden="true">🎙</span> falar';
+    botao.__rec=null;
+    if(aoFim) aoFim(area.value);
+  }
+  botao.classList.add("gravando");
+  botao.innerHTML='<span class="ponto" aria-hidden="true"></span> parar de falar';
+  botao.__rec=r;
+  try{ r.start(); }catch(e){ parar(); }
+  return r;
+}
+function botaoMic(area,rotulo){
+  var b=document.createElement("button");
+  b.type="button"; b.className="mic";
+  b.innerHTML='<span aria-hidden="true">🎙</span> '+(rotulo||"falar");
+  b.addEventListener("click",function(){
+    if(b.__rec){ try{b.__rec.stop();}catch(e){} return; }
+    ligaDitado(b,area);
+  });
+  return b;
+}
+
+/* ================= ACERVO CURADO ================= */
+/* eixos: índices de EIXOS. Nada aqui é inventado pela IA — ela só escolhe daqui. */
+var ACERVO=[
+ {id:"l1",tipo:"livro",titulo:"Conversas Difíceis",autor:"Douglas Stone, Bruce Patton e Sheila Heen",eixos:[2,5],nota:"O manual de como dizer o que precisa ser dito sem detonar a relação."},
+ {id:"l2",tipo:"livro",titulo:"Comunicação Não-Violenta",autor:"Marshall Rosenberg",eixos:[5,2],nota:"Separar observação de julgamento — a raiz de quase toda conversa que azeda."},
+ {id:"l3",tipo:"livro",titulo:"Conversas Cruciais",autor:"Kerry Patterson e outros",eixos:[1,0],nota:"O que fazer quando a conversa esquenta e você sente que vai ceder ou explodir."},
+ {id:"l4",tipo:"livro",titulo:"Como Chegar ao Sim",autor:"Roger Fisher e William Ury",eixos:[7,1],nota:"Negociar por interesse, não por posição. Base de tudo em negociação."},
+ {id:"l5",tipo:"livro",titulo:"O Poder do Não Positivo",autor:"William Ury",eixos:[0,2],nota:"Como recusar sem queimar a ponte. Direto ao ponto se você diz sim demais."},
+ {id:"l6",tipo:"livro",titulo:"Negocie Como se Sua Vida Dependesse Disso",autor:"Chris Voss",eixos:[5,1],nota:"Escuta como ferramenta tática, não como gentileza."},
+ {id:"l7",tipo:"livro",titulo:"Empresas Sem Medo",autor:"Amy Edmondson",eixos:[3,5],nota:"Por que as pessoas calam no trabalho — e o que um líder faz para mudar isso."},
+ {id:"l8",tipo:"livro",titulo:"Empatia Assertiva (Radical Candor)",autor:"Kim Scott",eixos:[2,4],nota:"Feedback que é direto e cuidadoso ao mesmo tempo. Para quem lidera."},
+ {id:"l9",tipo:"livro",titulo:"Pense de Novo",autor:"Adam Grant",eixos:[5,2],nota:"Mudar de ideia em público sem se sentir derrotado."},
+ {id:"l10",tipo:"livro",titulo:"O Poder dos Quietos",autor:"Susan Cain",eixos:[3,0],nota:"Para quem trava em reunião cheia e se cobra por isso."},
+ {id:"l11",tipo:"livro",titulo:"TED Talks: O Guia Oficial",autor:"Chris Anderson",eixos:[4,3],nota:"Estrutura de fala pública, do roteiro ao palco."},
+ {id:"l12",tipo:"livro",titulo:"Storytelling com Dados",autor:"Cole Nussbaumer Knaflic",eixos:[4,7],nota:"Se sua apresentação vira despejo de números, comece por aqui."},
+ {id:"l13",tipo:"livro",titulo:"Como Escrever Bem (On Writing Well)",autor:"William Zinsser",eixos:[6,4],nota:"Cortar o excesso. Vale para e-mail tanto quanto para livro."},
+ {id:"l14",tipo:"livro",titulo:"A Coragem de Ser Imperfeito",autor:"Brené Brown",eixos:[1,3],nota:"Sobre sustentar exposição — falar sabendo que pode dar errado."},
+ {id:"l15",tipo:"livro",titulo:"Comunicação Objetiva (HBR Guide to Better Business Writing)",autor:"Bryan Garner",eixos:[6,7],nota:"Conclusão primeiro, contexto depois. Método aplicável hoje."},
+ {id:"p1",tipo:"palestra",titulo:"Como falar de um jeito que as pessoas queiram ouvir",autor:"Julian Treasure — TED",eixos:[4,3],nota:"Sete minutos sobre o que faz alguém ser escutado ou ignorado."},
+ {id:"p2",tipo:"palestra",titulo:"10 maneiras de ter uma conversa melhor",autor:"Celeste Headlee — TED",eixos:[5,2],nota:"Regras práticas de escuta. A mais dura: não é a sua vez de falar."},
+ {id:"p3",tipo:"palestra",titulo:"Como se posicionar por si mesmo",autor:"Adam Galinsky — TED",eixos:[0,1],nota:"Quando pedir, quando insistir, e por que a hora importa mais que a frase."},
+ {id:"p4",tipo:"palestra",titulo:"Construindo um time psicologicamente seguro",autor:"Amy Edmondson — TED",eixos:[3,5],nota:"Para quem lidera gente que não fala."},
+ {id:"p5",tipo:"palestra",titulo:"Ouvir quem discorda de você",autor:"Megan Phelps-Roper — TED",eixos:[2,5],nota:"Discordar sem transformar a pessoa em inimigo."},
+ {id:"p6",tipo:"palestra",titulo:"O segredo de uma boa conversa difícil",autor:"Adar Cohen — TED",eixos:[2,1],nota:"Três perguntas para conduzir a conversa que você está adiando."},
+ {id:"f1",tipo:"filme",titulo:"12 Homens e uma Sentença",autor:"1957, dir. Sidney Lumet",eixos:[2,1],nota:"Uma sala inteira contra um homem. Aula de discordar sustentando a posição."},
+ {id:"f2",tipo:"filme",titulo:"O Discurso do Rei",autor:"2010, dir. Tom Hooper",eixos:[4,3],nota:"Preparação de fala pública como trabalho braçal, não talento."},
+ {id:"f3",tipo:"filme",titulo:"O Homem que Mudou o Jogo (Moneyball)",autor:"2011, dir. Bennett Miller",eixos:[7,2],nota:"Defender uma posição impopular com dado na mão."},
+ {id:"f4",tipo:"filme",titulo:"Margin Call",autor:"2011, dir. J.C. Chandor",eixos:[7,1],nota:"Comunicar coisa grave para cima, de madrugada, sem enfeite."},
+ {id:"f5",tipo:"filme",titulo:"O Diabo Veste Prada",autor:"2006, dir. David Frankel",eixos:[1,5],nota:"Relação com chefe difícil, e o preço de só absorver."},
+ {id:"f6",tipo:"filme",titulo:"Obrigado por Fumar",autor:"2005, dir. Jason Reitman",eixos:[0,7],nota:"Retórica afiada — inclusive para você reconhecer quando usam com você."},
+ {id:"f7",tipo:"filme",titulo:"Apollo 13",autor:"1995, dir. Ron Howard",eixos:[7,4],nota:"Objetividade sob pressão máxima, com todo mundo escutando."},
+ {id:"f8",tipo:"filme",titulo:"Erin Brockovich",autor:"2000, dir. Steven Soderbergh",eixos:[0,3],nota:"Ocupar espaço onde ninguém te deu espaço."},
+ {id:"v1",tipo:"video",titulo:"Estrutura de apresentação em 3 atos",autor:"busca guiada no YouTube",eixos:[4,7],nota:"Abertura, tensão e fechamento — a espinha de qualquer apresentação.",q:"como estruturar uma apresentação profissional 3 atos"},
+ {id:"v2",tipo:"video",titulo:"Respiração e voz antes de falar em público",autor:"busca guiada no YouTube",eixos:[3,4],nota:"O que fazer nos cinco minutos antes de entrar.",q:"exercícios de respiração e voz antes de falar em público"},
+ {id:"v3",tipo:"video",titulo:"Como responder perguntas difíceis da plateia",autor:"busca guiada no YouTube",eixos:[1,7],nota:"A parte que derruba quem só ensaiou o slide.",q:"como responder perguntas difíceis apresentação"},
+ {id:"v4",tipo:"video",titulo:"Simulação de entrevista de emprego em português",autor:"busca guiada no YouTube",eixos:[0,4],nota:"Ver alguém errando ajuda mais que ler dez listas.",q:"simulação entrevista de emprego perguntas e respostas"},
+ {id:"v5",tipo:"video",titulo:"Como pedir aumento salarial",autor:"busca guiada no YouTube",eixos:[0,1],nota:"Preparar número, hora e alternativa antes da conversa.",q:"como pedir aumento salarial conversa com o chefe"},
+ {id:"v6",tipo:"video",titulo:"Feedback difícil para um liderado",autor:"busca guiada no YouTube",eixos:[2,4],nota:"O roteiro da conversa que ninguém quer ter.",q:"como dar feedback difícil para um liderado"}
+];
+function linkItem(it){
+  if(it.tipo==="video"||it.tipo==="palestra") return buscaVideo(it.q||(it.titulo+" "+it.autor));
+  if(it.tipo==="filme") return busca(it.titulo+" "+it.autor+" onde assistir");
+  return busca(it.titulo+" "+it.autor+" livro");
+}
+function rotuloTipo(t){ return {livro:"livro",filme:"filme",palestra:"palestra",video:"vídeo"}[t]||t; }
+
+/* ================= ROTEADOR ================= */
+var TELAS=["resolver","treino","fichas","ficha","preparacao","plano","atividades","indicacoes","avaliacao","diagnostico","conta","limite"];
+var ABA_DE={resolver:"resolver",treino:"resolver",fichas:"fichas",ficha:"fichas",preparacao:"preparacao",plano:"preparacao",
+            atividades:"atividades",indicacoes:"indicacoes",avaliacao:"avaliacao",diagnostico:"avaliacao",conta:"conta",limite:"resolver"};
+/* navegação interna: nada de location.hash — dentro de visualizadores
+   embutidos qualquer troca de endereço é bloqueada e o botão "não faz nada". */
+var ROTA={tela:"resolver",arg:null,arg2:null},PILHA=[];
+function rota(){ return ROTA; }
+function parseRota(h){
+  var p=String(h||"").replace(/^#\/?/,"").split("/").filter(Boolean);
+  return {tela:p[0]||"resolver",arg:p[1]||null,arg2:p[2]||null};
+}
+function vai(h){
+  var nova=parseRota(h);
+  if(nova.tela===ROTA.tela&&nova.arg===ROTA.arg&&nova.arg2===ROTA.arg2) return;
+  PILHA.push({tela:ROTA.tela,arg:ROTA.arg,arg2:ROTA.arg2});
+  if(PILHA.length>40) PILHA.shift();
+  ROTA=nova; render();
+}
+function volta(){
+  var a=PILHA.pop();
+  ROTA=a||{tela:"resolver",arg:null,arg2:null};
+  render();
+}
+function toast(txt){
+  var t=el("toast");
+  if(!t){ t=document.createElement("div"); t.id="toast"; t.className="toast"; document.body.appendChild(t); }
+  t.textContent=txt; t.classList.add("on");
+  clearTimeout(t.__x); t.__x=setTimeout(function(){ t.classList.remove("on"); },3200);
+}
+document.addEventListener("click",function(e){
+  var a=e.target&&e.target.closest?e.target.closest("a"):null;
+  if(!a) return;
+  var h=a.getAttribute("href")||"";
+  if(h.indexOf("#/")===0){ e.preventDefault(); vai(h); return; }
+  if(a.getAttribute("target")==="_blank"&&a.href){
+    /* links externos costumam ser bloqueados dentro de visualizadores embutidos:
+       copio o endereço para você colar no navegador se ele não abrir. */
+    try{
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(a.href);
+        toast("Link copiado. Se não abrir aqui, cole no navegador.");
+      }
+    }catch(_e){}
+  }
+});
+function el(id){ return document.getElementById(id); }
+function pintaAbas(alvo){
+  var a=ABA_DE[alvo]||"resolver";
+  Array.prototype.forEach.call(document.querySelectorAll(".aba"),function(x){
+    x.classList.toggle("ativa",x.getAttribute("data-aba")===a);
+  });
+  var abertas=estado.atividades.filter(function(x){return x.status==="aberta";}).length;
+  var b=el("badge-atv");
+  b.style.display=abertas?"inline-block":"none"; b.textContent=abertas;
+}
+function render(){
+  var r=rota(),alvo=TELAS.indexOf(r.tela)>=0?r.tela:"resolver";
+  TELAS.forEach(function(t){ el("tela-"+t).classList.toggle("on",t===alvo); });
+  el("etapa").textContent="";
+  pintaAbas(alvo);
+  ({resolver:telaResolver,treino:telaTreino,fichas:telaFichas,ficha:telaFicha,preparacao:telaPreparacao,
+    plano:telaPlano,atividades:telaAtividades,indicacoes:telaIndicacoes,avaliacao:telaAvaliacao,
+    diagnostico:telaDiagnostico,conta:telaConta,limite:telaLimite})[alvo](r.arg);
+  window.scrollTo({top:0,behavior:"auto"});
+}
+window.addEventListener("keydown",function(e){
+  if(e.key!=="Escape") return;
+  if(el("modal-ia").classList.contains("on")) fechaModal();
+});
+function ligaVoltar(escopo){
+  Array.prototype.forEach.call((escopo||document).querySelectorAll("[data-voltar]"),function(b){
+    b.addEventListener("click",volta);
+  });
+}
+
+/* ================= MODAL / CONEXÃO ================= */
+function pintaIA(){
+  var t={claude:"conectada aqui dentro do Claude",servidor:"conectada ao seu servidor",chave:(ehGemini()?"conectada ao Google Gemini":"conectada com chave da Anthropic"),
+         offline:"sem conexão",desconhecido:"ainda não usada nesta sessão"}[IA.modo];
+  var e=el("estado-ia"); if(e) e.innerHTML="Estado: <b>"+t+"</b>";
+  el("btn-ia").classList.toggle("ligado",IA.modo!=="offline"&&IA.modo!=="desconhecido");
+}
+function abreModal(){
+  el("in-endpoint").value=estado.conexao.endpoint;
+  el("in-chave").value=estado.conexao.chave;
+  el("in-modelo").value=estado.conexao.modelo||"";
+  el("teste-ia").innerHTML="";
+  pintaIA(); el("modal-ia").classList.add("on");
+}
+function fechaModal(){ el("modal-ia").classList.remove("on"); }
+el("btn-ia").addEventListener("click",abreModal);
+el("fechar-ia").addEventListener("click",fechaModal);
+el("modal-ia").addEventListener("click",function(e){ if(e.target===el("modal-ia")) fechaModal(); });
+el("salvar-ia").addEventListener("click",function(){
+  estado.conexao.endpoint=el("in-endpoint").value.trim();
+  estado.conexao.chave=el("in-chave").value.trim();
+  estado.conexao.modelo=el("in-modelo").value.trim();
+  IA.modo="desconhecido"; salva(); pintaIA();
+  toast("Conexão salva. Use Testar conexão para conferir.");
+});
+el("testar-ia").addEventListener("click",function(){
+  estado.conexao.endpoint=el("in-endpoint").value.trim();
+  estado.conexao.chave=el("in-chave").value.trim();
+  estado.conexao.modelo=el("in-modelo").value.trim();
+  salva();
+  var box=el("teste-ia");
+  box.innerHTML='<p class="digitando" style="margin-top:12px">testando<i></i><i></i><i></i></p>';
+  el("testar-ia").disabled=true;
+  chamar("Responda apenas: ok",[{role:"user",content:"teste"}],20).then(function(){
+    el("testar-ia").disabled=false;
+    box.innerHTML='<p style="margin-top:12px;color:#3F5E52"><strong>Funcionou.</strong> Modelo em uso: '+
+      esc(modeloAtual())+'. Pode fechar e usar o app.</p>';
+    pintaIA();
+  }).catch(function(err){
+    el("testar-ia").disabled=false;
+    box.innerHTML='<p style="margin-top:12px;color:var(--vermelho)"><strong>Não conectou.</strong> '+
+      esc(diagnostica(err))+'</p><p class="dica" style="margin-top:6px">Detalhe técnico: '+esc(err.message||"")+'</p>';
+  });
+});
+el("zerar-tudo").addEventListener("click",function(){
+  if(!confirm("Apagar sua roda, fichas, atividades e conta? Isso não tem volta.")) return;
+  estado={roda:[2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5],entrada:null,diagnosticoFeito:false,origens:[],fichas:{},
+    atividades:[],indicados:{},preparacoes:{},cenas:0,refeitas:0,
+    conta:{nome:"",idade:"",situacao:"",empresa:"",cargo:"",curriculo:"",analise:null},conexao:{endpoint:"",chave:"",modelo:""}};
+  salva().then(function(){ fechaModal(); PILHA=[]; ROTA={tela:"resolver",arg:null,arg2:null}; render(); toast("Tudo apagado."); });
+});
+
+/* ================= ATIVIDADES (motor) ================= */
+function criaAtividade(a){
+  a.id=uid("a"); a.data=hoje(); a.status="aberta"; a.feedback=null;
+  estado.atividades.unshift(a); salva(); pintaAbas(rota().tela);
+  return a;
+}
+
+/* ================= PROMPTS ================= */
+var P_FICHA=
+"Você monta fichas de personagem para um simulador de conversas difíceis de trabalho. A partir do relato, devolva SOMENTE JSON:\n"+
+'{"limite":false,"nome":"","inicial":"","papel":"","contexto":"","desc":"","objetivo":"",'+
+'"reacoes":{"assertiva":"","passiva":"","agressiva":""},"nunca":"","roda":[0,0,0,0,0,0,0,0],"relacao":0,"relacaoPorque":"",'+
+'"competencias":["","",""],"tags":["","","",""],"situacao":"","abertura":"","rotulos":["","",""],'+
+'"saidas":["","",""],"leitura":["","",""],"atrito":[["",""],["",""],["",""]],"atritoTexto":"","passos":[["01","",""],["02","",""],["03","",""]]}\n\n'+
+"roda: 8 números de 0 a 5 nesta ordem — assertividade, firmeza sob pressão, discordar bem, iniciativa, clareza, escuta, tom escrito, objetividade. É a leitura que o usuário tem daquela pessoa.\n"+
+"relacao: nota de 0 a 10 para a qualidade da relação entre o usuário e essa pessoa, deduzida do relato. relacaoPorque: uma frase justificando.\n"+
+"competencias: as três da lista que a conversa mais exige DO USUÁRIO.\n"+
+"nome: se não foi dito, invente um primeiro nome brasileiro comum. inicial: duas letras maiúsculas.\n"+
+"abertura: a primeira fala do personagem, 1 ou 2 frases, já dentro da tensão.\n"+
+"rotulos: a pergunta feita ao usuário em cada uma das 3 rodadas. saidas: 3 falas prontas em primeira pessoa.\n"+
+"leitura: 3 observações sobre como essa pessoa funciona, cada uma ancorada num número da roda.\n"+
+"atrito: 3 pares [\"Competência: você X · ele/ela Y\",\"consequência curta\"].\n"+
+"passos: o que o USUÁRIO faz, nunca como dobrar ou manipular o outro.\n"+
+"Português do Brasil, direto, sem jargão de coach e sem rótulo psicológico.\n"+
+"Se envolver assédio, discriminação, violência, ameaça, crime ou sofrimento grave, devolva apenas {\"limite\":true}.";
+function pAtor(f){
+  return "Você é "+f.nome+", "+f.papel+". "+f.contexto+"\n"+
+  "Seu objetivo nesta cena: "+f.objetivo+".\n"+
+  "Se a pessoa sustentar a posição com firmeza e respeito: "+f.reacoes.assertiva+".\n"+
+  "Se a pessoa ceder, adiar ou suavizar: "+f.reacoes.passiva+".\n"+
+  "Se a pessoa atacar ou ironizar: "+f.reacoes.agressiva+".\n"+
+  "Você nunca: "+(f.nunca||"grita, humilha ou ameaça")+".\n"+
+  "Nunca dê conselhos, nunca comente a comunicação da pessoa, nunca avalie o desempenho dela, nunca saia do papel, nunca mencione que isto é treino. "+
+  "Responda só o que "+f.nome+" falaria, em uma ou duas frases, em português do Brasil.";
+}
+var P_AVAL=
+"Você avalia alguém numa conversa difícil de trabalho a partir da transcrição de uma cena encerrada. Devolva SOMENTE JSON:\n"+
+'{"titulo":"","resumo":"","citacao":"","trecho":"","analise":"","melhor":"","porque":"","notas":[["",0],["",0],["",0]],"refazer":""}\n\n'+
+"titulo: veredito em uma frase, direto, sem elogio vazio.\n"+
+"citacao: fala do USUÁRIO copiada LITERALMENTE da transcrição, entre aspas curvas.\n"+
+"trecho: o pedaço exato dentro dessa citação que quebrou. Precisa aparecer literalmente na citacao.\n"+
+"analise: por que aquele trecho custou caro. Um erro principal apenas.\n"+
+"melhor: a substituição pronta, no registro do próprio usuário.\n"+
+"notas: as três competências indicadas, de 0 a 5 (0-1 não apareceu, 2 frágil, 3 parcial, 4 clara, 5 sustentada preservando a relação).\n"+
+"Avalie a fala daquela cena, nunca a personalidade de quem falou. Nunca use rótulo psicológico. Português do Brasil.";
+
+/* ================= TELA: RESOLVER ================= */
+var destinoCena=null;
+function telaResolver(){
+  var c=el("tela-resolver");
+  c.innerHTML='<div class="wrap"><div class="hero escuro">'+
+    '<h1>Ensaie aqui a conversa <em>que você vai ter lá.</em></h1>'+
+    '<p class="lede">Conte a situação escrevendo ou falando. A Antessala monta quem está do outro lado, você treina, e a devolutiva mostra a frase exata que travou.</p>'+
+    '<label for="sit">O que está pegando agora?</label>'+
+    '<textarea id="sit" placeholder="Ex.: meu sócio anunciou uma mudança de prazo na frente do time e eu não reagi"></textarea>'+
+    '<p class="erro" id="erro-sit">Escreva ou fale a situação primeiro.</p>'+
+    '<div class="acoes"><button class="btn" id="montar">Montar a cena</button>'+
+    '<span id="mic-slot"></span>'+
+    '<span class="dica" style="color:#6C7C77">'+(temDitado()?"Dá para falar em vez de escrever.":"Ditado por voz indisponível neste navegador.")+'</span></div>'+
+    '<div class="painel" id="painel"><p class="rot" id="painel-rot"></p><p id="painel-eco"></p>'+
+    '<button class="btn" id="entrar-cena">Entrar na cena →</button></div>'+
+    '<div class="chips"><span class="rotulo">Ou comece por uma situação comum</span>'+
+    ["Preciso dar um feedback difícil","Meu chefe fecha a decisão antes de eu falar","Travo quando falo em reunião",
+     "Preciso dizer não sem queimar a relação","Meu liderado não me avisa quando trava","Vou pedir aumento e travo na hora"]
+      .map(function(t){return '<button class="chip">'+t+'</button>';}).join("")+
+    '</div></div>'+
+    '<div class="grid-2" style="margin-top:26px">'+
+      '<div class="cartao"><p class="mono cinza">sua roda</p><h3 style="margin:6px 0 8px">'+
+        (estado.diagnosticoFeito?"Onde você está hoje":"Você ainda não tem ponto de partida")+'</h3>'+
+        '<p style="font-size:15.5px;color:var(--texto-2);margin:0 0 12px">'+
+        (estado.diagnosticoFeito?"Mais fracas agora: "+fracos(2).map(function(i){return EIXOS[i];}).join(" e ")+".":"O diagnóstico leva 2 minutos e marca de onde você partiu.")+'</p>'+
+        '<a class="btn-pequeno" href="#/avaliacao">'+(estado.diagnosticoFeito?"ver minha roda":"fazer o diagnóstico")+'</a></div>'+
+      '<div class="cartao"><p class="mono cinza">atividades em aberto</p><h3 style="margin:6px 0 8px">'+
+        estado.atividades.filter(function(a){return a.status==="aberta";}).length+' esperando seu retorno</h3>'+
+        '<p style="font-size:15.5px;color:var(--texto-2);margin:0 0 12px">Toda orientação que você pediu vira uma atividade aberta até você contar como foi.</p>'+
+        '<a class="btn-pequeno" href="#/atividades">abrir atividades</a></div>'+
+    '</div></div>';
+  var ta=el("sit");
+  el("mic-slot").appendChild(botaoMic(ta,"falar"));
+  ta.addEventListener("input",function(){ el("erro-sit").classList.remove("aberto"); });
+  el("montar").addEventListener("click",function(){
+    var t=ta.value.trim();
+    if(!t){ el("erro-sit").classList.add("aberto"); ta.focus(); return; }
+    montaCena(t);
+  });
+  el("entrar-cena").addEventListener("click",function(){ if(destinoCena) vai("#/treino/"+destinoCena); });
+  Array.prototype.forEach.call(c.querySelectorAll(".chip"),function(b){
+    b.addEventListener("click",function(){ ta.value=b.textContent; montaCena(b.textContent); });
+  });
+}
+function montaCena(txt){
+  if(ehLimite(txt)){ vai("#/limite"); return; }
+  var painel=el("painel");
+  el("painel-rot").textContent="Montando sua cena";
+  el("painel-eco").innerHTML='<span class="digitando">lendo o relato e montando quem está do outro lado<i></i><i></i><i></i></span>';
+  el("entrar-cena").disabled=true; painel.classList.add("aberto");
+  chamar(P_FICHA,[{role:"user",content:"Relato: "+txt}],2000).then(function(s){
+    var f=comoJSON(s);
+    if(f.limite){ vai("#/limite"); return; }
+    var id=uid("p");
+    estado.fichas[id]={
+      nome:f.nome,inicial:(f.inicial||f.nome.slice(0,2)).toUpperCase(),papel:f.papel,contexto:f.contexto,desc:f.desc,
+      objetivo:f.objetivo,reacoes:f.reacoes,nunca:f.nunca,roda:f.roda,rodaInicial:f.roda.slice(),atritoIdx:[0,1,5],
+      leitura:(f.leitura||[]).map(function(l,i){return [("0"+(i+1)).slice(-2),l];}),
+      atrito:f.atrito||[],atritoTexto:f.atritoTexto||"",passos:f.passos||[],
+      relacao:Math.max(0,Math.min(10,f.relacao||5)),relacaoInicial:Math.max(0,Math.min(10,f.relacao||5)),
+      relacaoPorque:f.relacaoPorque||"",notas:[],criada:hoje(),relato:txt,
+      cena:{situacao:f.situacao||txt,tags:(f.tags||[]).map(function(t,i){return [t,i<2?1:0];}),
+        competencias:f.competencias||["assertividade","firmeza sob pressão","clareza"],
+        abertura:f.abertura,rotulos:f.rotulos||["O que você diz?","E agora?","Última fala."],
+        saidas:f.saidas||["","",""],feita:0}
+    };
+    destinoCena=id; salva();
+    el("painel-rot").textContent="Sua cena está pronta";
+    el("painel-eco").innerHTML="Do outro lado: <strong style=\"color:#EDEFEB\">"+esc(f.nome)+"</strong>, "+esc(f.papel)+". "+esc(f.contexto)+
+      "<br><span style=\"font-size:14.5px\">A ficha dele já está na sua estante, com relação "+f.relacao+"/10.</span>";
+    el("entrar-cena").disabled=false;
+  }).catch(function(err){
+    el("painel-rot").textContent="Não consegui montar a cena";
+    el("painel-eco").textContent=diagnostica(err)+" Toque no ícone de conexão no topo para testar.";
+    el("entrar-cena").disabled=true;
+  });
+}
+
+/* ================= TELA: TREINO ================= */
+var T={};
+function telaTreino(id){
+  var f=estado.fichas[id];
+  if(!f){ vai("#/fichas"); return; }
+  T={f:f,id:id,rodada:1,hist:[],ocupado:false};
+  var c=el("tela-treino");
+  c.innerHTML='<div class="wrap-estreito"><button class="voltar" data-voltar>← voltar</button>'+
+    '<p class="mono cinza">Sua situação</p><h1 style="font-size:25px;margin:8px 0 12px">'+esc(f.cena.situacao)+'</h1>'+
+    '<div class="tags">'+(f.cena.tags||[]).map(function(t){return '<span class="tag'+(t[1]?" forte":"")+'">'+esc(t[0])+'</span>';}).join("")+'</div>'+
+    '<div id="selo">'+(f.cena.feita?'<span class="selo"><b>'+(f.cena.feita+1)+'ª volta</b> — agora vale para a roda</span>':'<span class="selo">primeira passagem — as notas ainda não movem a roda</span>')+'</div>'+
+    '<section class="cena"><div class="quem"><div class="avatar">'+esc(f.inicial)+'</div>'+
+      '<p><strong>'+esc(f.nome)+', '+esc(f.papel)+'</strong>'+esc(f.contexto)+'</p></div>'+
+      '<div id="conversa"></div>'+
+      '<div class="compositor"><label for="resp" id="rot-resp"></label>'+
+      '<textarea id="resp" placeholder="Escreva como você falaria de verdade — não como acha que deveria falar"></textarea>'+
+      '<p class="erro" id="erro-resp">Escreva sua resposta antes de enviar.</p>'+
+      '<div class="acoes"><button class="btn" id="enviar">Responder</button>'+
+      '<button class="btn-vazado" id="travei">Travei, me dá uma saída</button><span id="mic-treino"></span></div></div></section>'+
+    '<section class="devolutiva" id="dev" aria-live="polite">'+
+      '<div class="dev-topo"><p class="mono">Devolutiva</p><h2 id="d-tit"></h2><p class="cinza" id="d-res" style="margin-top:8px"></p></div>'+
+      '<div class="bloco"><h3>Onde quebrou</h3><p class="citacao" id="d-cit"></p><p id="d-ana"></p></div>'+
+      '<div class="bloco"><h3>O que dizer no lugar</h3><p class="citacao melhor" id="d-mel"></p><p id="d-pq"></p></div>'+
+      '<div class="bloco"><h3>Como ficou nesta rodada</h3><div class="notas" id="d-notas"></div><div id="d-efeito"></div></div>'+
+      '<div class="bloco" style="border-bottom:1px solid var(--giz)"><h3 id="d-fim">Agora de novo</h3><p id="d-ref"></p>'+
+      '<div class="acoes"><button class="btn" id="refazer">Refazer a cena</button>'+
+      '<button class="btn-vazado" id="ir-indic">Ver indicações para isto</button>'+
+      '<button class="btn-vazado" id="ir-ficha">Abrir a ficha de '+esc(f.nome)+'</button></div></div>'+
+    '</section></div>';
+  ligaVoltar(c);
+  el("mic-treino").appendChild(botaoMic(el("resp"),"falar"));
+  el("resp").addEventListener("input",function(){ el("erro-resp").classList.remove("aberto"); });
+  el("enviar").addEventListener("click",enviaFala);
+  el("travei").addEventListener("click",function(){
+    el("resp").value=(f.cena.saidas&&f.cena.saidas[T.rodada-1])||"";
+    el("resp").focus();
+  });
+  el("refazer").addEventListener("click",function(){ zeraCena(); });
+  el("ir-indic").addEventListener("click",function(){ vai("#/indicacoes"); });
+  el("ir-ficha").addEventListener("click",function(){ vai("#/ficha/"+id); });
+  zeraCena();
+}
+function bolha(t,minha){
+  var d=document.createElement("div"); d.className="fala "+(minha?"sua":"deles");
+  var b=document.createElement("div"); b.className="bolha"; b.textContent=t;
+  d.appendChild(b); el("conversa").appendChild(d);
+  d.scrollIntoView({block:"nearest",behavior:reduz?"auto":"smooth"});
+}
+function pensa(nome){
+  var d=document.createElement("p"); d.className="digitando";
+  d.innerHTML=esc(nome)+" está respondendo<i></i><i></i><i></i>";
+  el("conversa").appendChild(d); d.scrollIntoView({block:"nearest",behavior:reduz?"auto":"smooth"});
+  return d;
+}
+function zeraCena(){
+  T.rodada=1; T.hist=[]; T.ocupado=false;
+  el("conversa").innerHTML=""; el("dev").classList.remove("aberta");
+  el("resp").value=""; el("resp").removeAttribute("disabled");
+  el("enviar").disabled=false; el("travei").disabled=false;
+  el("rot-resp").textContent=T.f.cena.rotulos[0];
+  el("etapa").textContent="rodada 1 de 3";
+  bolha(T.f.cena.abertura,false);
+  T.hist.push({role:"assistant",content:T.f.cena.abertura});
+}
+function enviaFala(){
+  if(T.ocupado) return;
+  var ta=el("resp"),t=ta.value.trim();
+  if(!t){ el("erro-resp").classList.add("aberto"); ta.focus(); return; }
+  bolha(t,true); T.hist.push({role:"user",content:t}); ta.value="";
+  if(T.rodada>=3){ encerraCena(); return; }
+  T.ocupado=true; el("enviar").disabled=true;
+  var carr=pensa(T.f.nome);
+  chamar(pAtor(T.f),T.hist.map(function(m){return {role:m.role,content:m.content};}),400)
+    .then(function(fala){
+      carr.remove(); bolha(fala,false); T.hist.push({role:"assistant",content:fala});
+      T.rodada++; el("etapa").textContent="rodada "+T.rodada+" de 3";
+      el("rot-resp").textContent=T.f.cena.rotulos[T.rodada-1]||"Última fala.";
+      T.ocupado=false; el("enviar").disabled=false;
+    }).catch(function(err){
+      carr.remove();
+      var p=document.createElement("p"); p.className="digitando";
+      p.textContent="A conexão caiu ("+err.message+"). Responda de novo para tentar outra vez.";
+      el("conversa").appendChild(p);
+      T.ocupado=false; el("enviar").disabled=false;
+    });
+}
+function encerraCena(){
+  el("rot-resp").textContent="Cena encerrada.";
+  el("resp").setAttribute("disabled","disabled");
+  el("enviar").disabled=true; el("travei").disabled=true;
+  el("etapa").textContent="avaliando…";
+  var carr=pensa("Avaliando a cena");
+  var tr=T.hist.map(function(m){return (m.role==="user"?"USUÁRIO: ":T.f.nome.toUpperCase()+": ")+m.content;}).join("\n");
+  chamar(P_AVAL,[{role:"user",content:"Competências a avaliar: "+T.f.cena.competencias.join(", ")+".\n\nTranscrição:\n"+tr}],1500)
+    .then(function(s){ carr.remove(); el("etapa").textContent="cena encerrada"; mostraDev(comoJSON(s)); })
+    .catch(function(err){
+      carr.remove(); el("etapa").textContent="avaliação falhou";
+      el("dev").classList.add("aberta");
+      el("d-tit").textContent="Avaliação indisponível";
+      el("d-res").textContent="A cena rodou, mas a devolutiva não voltou ("+err.message+"). Dá para refazer.";
+      el("d-ref").textContent="Mesma cena, mesma pessoa.";
+    });
+}
+function mostraDev(d){
+  el("d-tit").textContent=d.titulo||"";
+  el("d-res").textContent=d.resumo||"";
+  var cit=esc(d.citacao||""),tre=esc(d.trecho||"");
+  el("d-cit").innerHTML=(tre&&cit.indexOf(tre)>=0)?cit.replace(tre,'<span class="marcado">'+tre+'</span>'):cit;
+  el("d-ana").textContent=d.analise||"";
+  el("d-mel").textContent=d.melhor||"";
+  el("d-pq").textContent=d.porque||"";
+  el("d-ref").textContent=d.refazer||"Mesma cena, mesma pessoa. Agora você sabe onde vai travar.";
+  var notas=d.notas||[];
+  el("d-notas").innerHTML=notas.map(function(n){
+    return '<div class="nota"><span class="k"><span>'+esc(n[0])+'</span><span>'+num(n[1])+'</span></span>'+
+      '<div class="trilho"><span class="barrinha" data-p="'+(Math.max(0,Math.min(5,n[1]))/5*100)+'"></span></div></div>';
+  }).join("");
+  el("dev").classList.add("aberta");
+  setTimeout(function(){ Array.prototype.forEach.call(document.querySelectorAll("#dev .barrinha"),function(b){ b.style.width=b.getAttribute("data-p")+"%"; }); },reduz?0:250);
+  aplicaNaRoda(notas,d);
+  el("dev").scrollIntoView({behavior:reduz?"auto":"smooth",block:"start"});
+}
+function aplicaNaRoda(notas,d){
+  var caixa=el("d-efeito"),f=T.f;
+  estado.cenas++;
+  f.cena.feita=(f.cena.feita||0)+1;
+  if(f.cena.feita===1){
+    f.cena.notas=notas; salva();
+    caixa.innerHTML='<p style="margin-top:16px">Estas notas ainda não movem sua roda. Elas movem quando você refizer a cena e sustentar o ajuste.</p>';
+    el("d-fim").textContent="Agora de novo";
+    return;
+  }
+  estado.refeitas++;
+  var linhas=[],mexeu=false;
+  notas.forEach(function(n){
+    var i=idxEixo(n[0]); if(i<0) return;
+    var alvo=Math.max(0,Math.min(5,n[1])),atual=estado.roda[i],novo=atual+(alvo-atual)*0.35;
+    if(Math.abs(novo-atual)<0.05) return;
+    estado.roda[i]=Math.round(novo*100)/100; mexeu=true;
+    linhas.push([EIXOS[i],atual,estado.roda[i]]);
+    estado.origens.push({data:hoje(),fonte:"cena refeita",eixo:EIXOS[i],
+      texto:"Refez a cena com "+f.nome+" e sustentou "+EIXOS[i]+" em "+num(alvo),
+      delta:Math.round((estado.roda[i]-atual)*100)/100});
+  });
+  salva();
+  el("d-fim").textContent="Mais uma volta?";
+  caixa.innerHTML=(mexeu
+    ? '<div class="ganho"><p style="margin:0 0 8px;font-size:14px;color:var(--texto-2)">Isto foi para a sua roda, com origem registrada:</p>'+
+      linhas.map(function(l){return '<div class="par"><span>'+esc(l[0])+'</span><b>'+num(l[1])+' → '+num(l[2])+'</b></div>';}).join("")+'</div>'
+    : '<p style="margin-top:16px">Desta vez a roda não mexeu: as notas ficaram no mesmo nível da volta anterior.</p>')+
+    '<div class="acoes"><button class="btn-pequeno" id="add-atv-cena">criar atividade: aplicar isso na conversa real</button></div>';
+  el("add-atv-cena").addEventListener("click",function(){
+    criaAtividade({tipo:"cena",pessoa:T.id,titulo:"Aplicar com "+f.nome+": "+(d.melhor?"usar a frase treinada":"o ajuste da cena"),
+      corpo:(d.melhor||"")+" — depois volte aqui e conte como foi."});
+    this.disabled=true; this.textContent="atividade criada";
+  });
+}
+
+/* ================= TELA: LIMITE ================= */
+function telaLimite(){
+  var c=el("tela-limite");
+  c.innerHTML='<div class="wrap-estreito"><button class="voltar" data-voltar>← voltar</button><div class="limite">'+
+  '<p class="mono cinza">esta não é uma cena para ensaiar</p>'+
+  '<h1>Isso não é um problema de comunicação.</h1>'+
+  '<p>Pelo que você descreveu, o que está acontecendo não se resolve com uma frase melhor. Treinar a sua fala aqui daria a entender que o ajuste é seu — e não é.</p>'+
+  '<p>Os caminhos, em ordem:</p><ul>'+
+  '<li>Registre o que aconteceu por escrito, com datas, o quanto antes.</li>'+
+  '<li>Canal interno de denúncia ou ouvidoria, se a empresa tiver.</li>'+
+  '<li>RH ou jurídico, dependendo da gravidade.</li>'+
+  '<li>Apoio profissional, se isso estiver pesando em você. Não é exagero procurar.</li></ul>'+
+  '<p style="margin-top:22px">Se eu li errado e a situação for outra, você pode reescrever com mais detalhe.</p>'+
+  '<div class="acoes"><button class="btn" data-voltar>Reescrever</button></div></div></div>';
+  ligaVoltar(c);
+}
+
+/* ================= TELA: FICHAS ================= */
+function telaFichas(){
+  var c=el("tela-fichas"),ids=Object.keys(estado.fichas);
+  c.innerHTML='<div class="wrap"><div class="cabecalho"><p class="mono cinza">suas fichas</p>'+
+    '<h1>As pessoas com quem você convive</h1>'+
+    '<p class="sub">Cada ficha é a sua leitura de uma pessoa: a roda dela, a nota da relação e tudo que você foi anotando. Só você vê.</p></div>'+
+    '<div class="cartao" style="margin-top:24px"><h3>Criar uma ficha</h3>'+
+    '<p style="font-size:15.5px;color:var(--texto-2);margin:6px 0 0">Conte quem é a pessoa, como ela age com você e o que vem acontecendo. Fale à vontade — quanto mais detalhe, melhor a ficha.</p>'+
+    '<label class="campo-rot" for="relato">Relato</label>'+
+    '<textarea id="relato" style="min-height:120px" placeholder="Ex.: a Maria é minha chefe, decide rápido, corta minha fala. Semana passada fechou uma entrega sem me consultar e eu fiquei calado."></textarea>'+
+    '<p class="erro" id="erro-relato">Escreva ou fale o relato primeiro.</p>'+
+    '<div class="acoes"><button class="btn" id="criar-ficha">Montar a ficha</button><span id="mic-ficha"></span>'+
+    '<span class="dica">'+(temDitado()?"Toque em falar e conte em voz alta.":"Ditado indisponível neste navegador.")+'</span></div>'+
+    '<div id="saida-ficha"></div></div>'+
+    '<h4>Fichas criadas</h4>'+
+    (ids.length?'':'<div class="vazio" style="margin-bottom:20px">Nenhuma ficha ainda.</div>')+
+    '<div class="grid" id="grid-fichas"></div></div>';
+  el("mic-ficha").appendChild(botaoMic(el("relato"),"falar"));
+  el("relato").addEventListener("input",function(){ el("erro-relato").classList.remove("aberto"); });
+  el("criar-ficha").addEventListener("click",function(){
+    var t=el("relato").value.trim();
+    if(!t){ el("erro-relato").classList.add("aberto"); return; }
+    if(ehLimite(t)){ vai("#/limite"); return; }
+    var s=el("saida-ficha");
+    s.innerHTML='<p class="digitando" style="margin-top:16px">montando a ficha e a roda dessa pessoa<i></i><i></i><i></i></p>';
+    el("criar-ficha").disabled=true;
+    chamar(P_FICHA,[{role:"user",content:"Relato: "+t}],2000).then(function(r){
+      var f=comoJSON(r);
+      if(f.limite){ vai("#/limite"); return; }
+      var id=uid("p");
+      estado.fichas[id]={
+        nome:f.nome,inicial:(f.inicial||f.nome.slice(0,2)).toUpperCase(),papel:f.papel,contexto:f.contexto,desc:f.desc,
+        objetivo:f.objetivo,reacoes:f.reacoes,nunca:f.nunca,roda:f.roda,rodaInicial:f.roda.slice(),atritoIdx:[0,1,5],
+        leitura:(f.leitura||[]).map(function(l,i){return [("0"+(i+1)).slice(-2),l];}),
+        atrito:f.atrito||[],atritoTexto:f.atritoTexto||"",passos:f.passos||[],
+        relacao:Math.max(0,Math.min(10,f.relacao||5)),relacaoInicial:Math.max(0,Math.min(10,f.relacao||5)),
+        relacaoPorque:f.relacaoPorque||"",notas:[],criada:hoje(),relato:t,
+        cena:{situacao:f.situacao||t,tags:(f.tags||[]).map(function(x,i){return [x,i<2?1:0];}),
+          competencias:f.competencias||["assertividade","firmeza sob pressão","clareza"],
+          abertura:f.abertura,rotulos:f.rotulos||["O que você diz?","E agora?","Última fala."],
+          saidas:f.saidas||["","",""],feita:0}
+      };
+      salva(); vai("#/ficha/"+id);
+    }).catch(function(err){
+      el("criar-ficha").disabled=false;
+      s.innerHTML='<p style="margin-top:14px;color:var(--vermelho)">'+esc(diagnostica(err))+'</p>';
+    });
+  });
+  var g=el("grid-fichas");
+  ids.forEach(function(id){
+    var p=estado.fichas[id],b=document.createElement("button");
+    b.className="card";
+    b.innerHTML='<svg class="radar" viewBox="0 0 240 240" aria-hidden="true"></svg><h3>'+esc(p.nome)+'</h3>'+
+      '<p class="papel">'+esc(p.papel)+'</p>'+
+      '<p class="ler">relação '+num(p.relacao)+'/10 · abrir →</p>';
+    desenha(b.querySelector("svg"),{vals:p.roda,classe:"poly-outro"});
+    b.addEventListener("click",function(){ vai("#/ficha/"+id); });
+    g.appendChild(b);
+  });
+}
+
+/* ================= TELA: FICHA ================= */
+function telaFicha(id){
+  var p=estado.fichas[id];
+  if(!p){ vai("#/fichas"); return; }
+  var c=el("tela-ficha");
+  c.innerHTML='<div class="wrap"><button class="voltar" data-voltar>← suas fichas</button>'+
+  '<div class="dcabeca"><div>'+
+    '<p class="mono cinza">ficha de '+esc(p.nome.toLowerCase())+'</p><h2>'+esc(p.nome)+'</h2>'+
+    '<p class="dpapel">'+esc(p.papel)+'</p><p>'+esc(p.desc)+'</p>'+
+    '<div class="ressalva"><strong>Esta roda é a sua leitura de '+esc(p.nome)+', não um diagnóstico.</strong> Ela existe para você treinar contra a versão que trava você. Só você vê, e você apaga quando quiser.</div>'+
+    '<button class="apagar" id="apagar">apagar esta ficha</button></div>'+
+    '<div class="radar-box"><svg class="radar" id="r-det" viewBox="0 0 240 240"></svg>'+
+    '<div class="legenda"><span class="leg"><i></i>'+esc(p.nome)+'</span><span class="leg v"><i></i>você</span></div></div></div>'+
+
+  '<h4>Como está a relação</h4>'+
+  '<div class="relacao"><div class="relacao-topo"><div><span class="valor">'+num(p.relacao)+'<small>/10</small></span>'+
+    '<p style="margin:4px 0 0;font-size:14.5px;color:var(--texto-2)">'+esc(p.relacaoPorque||"")+'</p></div>'+
+    '<span class="tag">começou em '+num(p.relacaoInicial)+'</span></div>'+
+    '<div class="escadinha" id="escada"></div>'+
+    '<label class="campo-rot" for="slider">Ajustar na mão</label>'+
+    '<input type="range" id="slider" min="0" max="10" step="0.5" value="'+p.relacao+'">'+
+  '</div>'+
+
+  '<h4>Anotar o que aconteceu</h4>'+
+  '<div class="cartao"><p style="font-size:15.5px;color:var(--texto-2);margin:0">Conte um episódio com '+esc(p.nome)+'. Você escolhe se isso mexe só na relação ou também na leitura que você tem dele.</p>'+
+    '<label class="campo-rot" for="nota-txt">O que aconteceu</label>'+
+    '<textarea id="nota-txt" placeholder="Ex.: pedi para ele me avisar antes de mudar o prazo e ele avisou. Foi a primeira vez."></textarea>'+
+    '<div class="opcoes-linha" id="escopo">'+
+      '<button class="escolha ativa" data-v="relacao">mexe na relação</button>'+
+      '<button class="escolha" data-v="roda">mexe na roda dele</button>'+
+      '<button class="escolha" data-v="ambos">nos dois</button>'+
+      '<button class="escolha" data-v="nada">só registrar</button></div>'+
+    '<div class="acoes"><button class="btn" id="salvar-nota">Registrar</button><span id="mic-nota"></span>'+
+    '<button class="btn-vazado" id="pedir-orient">Pedir orientação para isso</button></div>'+
+    '<div id="saida-nota"></div></div>'+
+  '<div class="resposta" id="resp-orient" style="display:none"></div>'+
+
+  '<h4>O que costuma acontecer</h4><ul class="leitura">'+
+    (p.leitura||[]).map(function(l){return '<li><b>'+esc(l[0])+'</b><span>'+esc(l[1])+'</span></li>';}).join("")+'</ul>'+
+  '<h4>Onde vocês se atritam</h4><div class="atrito">'+
+    (p.atrito||[]).map(function(a){return '<div class="par"><span>'+esc(a[0])+'</span><span>'+esc(a[1])+'</span></div>';}).join("")+
+    '<p style="margin-top:14px">'+esc(p.atritoTexto)+'</p></div>'+
+  '<div class="fecho"><p>Ler não muda nada na sua roda. Ensaiar, sim — '+esc(p.nome)+' entra na cena reagindo do jeito dele.</p>'+
+    '<button class="btn" id="ensaiar">Ensaiar essa conversa →</button></div>'+
+  '<h4>Histórico</h4>'+
+    ((p.notas&&p.notas.length)?'<ul class="linha-tempo">'+p.notas.slice().reverse().map(function(n){
+      return '<li><time>'+dataBr(n.data)+'</time><span>'+esc(n.texto)+
+        (n.efeito?' <span class="delta">'+esc(n.efeito)+'</span>':'')+'</span></li>';
+    }).join("")+'</ul>':'<div class="vazio">Nada anotado ainda.</div>')+
+  '</div>';
+  ligaVoltar(c);
+  desenha(el("r-det"),{vals:p.roda,vals2:estado.roda,classe:"poly-outro",classe2:"poly-voce",rotulos:true,atrito:p.atritoIdx||[0,1,5]});
+  pintaEscada(p.relacao);
+  el("mic-nota").appendChild(botaoMic(el("nota-txt"),"falar"));
+  el("ensaiar").addEventListener("click",function(){ vai("#/treino/"+id); });
+  el("apagar").addEventListener("click",function(){
+    if(!confirm("Apagar a ficha de "+p.nome+"? Isso não tem volta.")) return;
+    delete estado.fichas[id]; salva(); vai("#/fichas");
+  });
+  var escopo="relacao";
+  Array.prototype.forEach.call(el("escopo").children,function(b){
+    b.addEventListener("click",function(){
+      Array.prototype.forEach.call(el("escopo").children,function(x){x.classList.remove("ativa");});
+      b.classList.add("ativa"); escopo=b.getAttribute("data-v");
+    });
+  });
+  el("slider").addEventListener("change",function(){
+    p.relacao=parseFloat(this.value);
+    p.notas.push({data:hoje(),texto:"Ajustou a nota da relação na mão para "+num(p.relacao)+"/10.",efeito:null});
+    salva(); telaFicha(id);
+  });
+  el("salvar-nota").addEventListener("click",function(){ registraNota(id,escopo); });
+  el("pedir-orient").addEventListener("click",function(){ pedeOrientacao(id); });
+}
+function pintaEscada(v){
+  var e=el("escada"); if(!e) return;
+  e.innerHTML=Array.from({length:10},function(_,i){ return '<i class="'+(i<Math.round(v)?"on":"")+'"></i>'; }).join("");
+}
+function registraNota(id,escopo){
+  var p=estado.fichas[id],ta=el("nota-txt"),t=ta.value.trim();
+  if(!t){ ta.focus(); return; }
+  if(ehLimite(t)){ vai("#/limite"); return; }
+  var saida=el("saida-nota");
+  if(escopo==="nada"){
+    p.notas.push({data:hoje(),texto:t,efeito:null}); salva(); telaFicha(id); return;
+  }
+  saida.innerHTML='<p class="digitando" style="margin-top:12px">lendo o episódio<i></i><i></i><i></i></p>';
+  el("salvar-nota").disabled=true;
+  var sys="Você atualiza a ficha que alguém mantém sobre uma pessoa do trabalho, a partir de um episódio novo.\n"+
+    "Ficha atual — "+p.nome+", "+p.papel+". "+p.desc+"\n"+
+    "Roda dela na ordem "+EIXOS.join(", ")+": "+p.roda.join(", ")+".\n"+
+    "Nota atual da relação: "+p.relacao+" de 10.\n"+
+    "Escopo autorizado pelo usuário: "+({relacao:"só a nota da relação",roda:"só a roda dela",ambos:"a nota da relação e a roda"})[escopo]+".\n"+
+    'Devolva SOMENTE JSON: {"relacao":0,"motivo":"","roda":[["competência",0.0]],"resumo":""}\n'+
+    "relacao: a nova nota de 0 a 10 (se o escopo não autoriza mexer nela, repita a atual). Mova pouco: um episódio raramente vale mais de 1 ponto.\n"+
+    "roda: lista de ajustes, cada um [nome exato da competência, delta entre -0,5 e +0,5]. Lista vazia se o escopo não autoriza ou se o episódio não é evidência de mudança.\n"+
+    "resumo: uma frase curta dizendo o que esse episódio mostra. Sem rótulo psicológico, sem diagnóstico.";
+  chamar(sys,[{role:"user",content:t}],700).then(function(s){
+    var r=comoJSON(s),efeitos=[];
+    if(escopo==="relacao"||escopo==="ambos"){
+      var nova=Math.max(0,Math.min(10,r.relacao));
+      if(Math.abs(nova-p.relacao)>=0.1){ efeitos.push("relação "+num(p.relacao)+" → "+num(nova)); p.relacao=nova; }
+    }
+    if(escopo==="roda"||escopo==="ambos"){
+      (r.roda||[]).forEach(function(a){
+        var i=idxEixo(a[0]); if(i<0) return;
+        var d=Math.max(-0.5,Math.min(0.5,a[1]));
+        if(Math.abs(d)<0.05) return;
+        var antes=p.roda[i];
+        p.roda[i]=Math.round(Math.max(0,Math.min(5,antes+d))*100)/100;
+        efeitos.push(EIXOS[i]+" "+num(antes)+" → "+num(p.roda[i]));
+      });
+    }
+    p.relacaoPorque=r.motivo||p.relacaoPorque;
+    p.notas.push({data:hoje(),texto:t,efeito:efeitos.length?efeitos.join(" · "):"sem mudança"});
+    salva(); telaFicha(id);
+  }).catch(function(err){
+    el("salvar-nota").disabled=false;
+    saida.innerHTML='<p style="margin-top:12px;color:var(--vermelho)">Não consegui avaliar o episódio ('+esc(err.message)+'). Ele foi salvo sem alterar nada.</p>';
+    p.notas.push({data:hoje(),texto:t,efeito:null}); salva();
+  });
+}
+function pedeOrientacao(id){
+  var p=estado.fichas[id],t=el("nota-txt").value.trim();
+  if(!t){ el("nota-txt").focus(); return; }
+  if(ehLimite(t)){ vai("#/limite"); return; }
+  var box=el("resp-orient");
+  box.style.display="block";
+  box.innerHTML='<h4>Lendo o que aconteceu…</h4><p class="digitando">montando a orientação<i></i><i></i><i></i></p>';
+  var sys="Você orienta alguém sobre como conduzir a próxima conversa com uma pessoa específica do trabalho.\n"+
+    "Ficha dessa pessoa, que é a leitura do usuário: "+p.nome+", "+p.papel+". "+p.desc+"\n"+
+    "Roda dela na ordem "+EIXOS.join(", ")+": "+p.roda.join(", ")+".\n"+
+    "Roda do usuário, mesma ordem: "+estado.roda.map(num).join(", ")+".\n"+
+    "Nota da relação entre os dois: "+p.relacao+"/10.\n"+
+    'Devolva SOMENTE JSON: {"titulo":"","passos":[["01","",""],["02","",""],["03","",""],["04","",""]]}\n'+
+    "Cada passo: [número, frase-título no imperativo, explicação curta ancorada num número da roda]. "+
+    "Oriente o que o USUÁRIO faz, nunca como dobrar ou manipular a outra pessoa. Nunca diagnostique ninguém. Português do Brasil, direto.";
+  chamar(sys,[{role:"user",content:t}],1200).then(function(s){
+    var r=comoJSON(s);
+    box.innerHTML='<h4>'+esc(r.titulo||"Como entrar nessa conversa")+'</h4>'+
+      (r.passos||[]).map(function(x){return '<div class="acao"><b>'+esc(x[0])+'</b><div><strong>'+esc(x[1])+'</strong><br><em>'+esc(x[2])+'</em></div></div>';}).join("")+
+      '<div class="acoes"><button class="btn" id="virar-atv">Deixar em aberto nas atividades</button>'+
+      '<button class="btn-vazado" id="ensaiar-orient">Ensaiar antes</button></div>'+
+      '<p class="dica" style="margin-top:10px">A atividade fica esperando o seu retorno até você contar como foi.</p>';
+    el("virar-atv").addEventListener("click",function(){
+      criaAtividade({tipo:"orientacao",pessoa:id,titulo:(r.titulo||"Conversa com "+p.nome),
+        corpo:t,passos:r.passos||[]});
+      this.disabled=true; this.textContent="está nas suas atividades";
+    });
+    el("ensaiar-orient").addEventListener("click",function(){ vai("#/treino/"+id); });
+  }).catch(function(err){
+    box.innerHTML='<h4>Não consegui montar a orientação</h4><p class="cinza">'+esc(err.message)+'. Confira a conexão no ícone do topo.</p>';
+  });
+}
+
+/* ================= TELA: ATIVIDADES ================= */
+var filtroAtv="aberta";
+function telaAtividades(){
+  var c=el("tela-atividades");
+  var lista=estado.atividades.filter(function(a){ return filtroAtv==="todas"?true:a.status===filtroAtv; });
+  c.innerHTML='<div class="wrap-estreito"><div class="cabecalho"><p class="mono cinza">atividades</p>'+
+    '<h1>O que você combinou consigo mesmo</h1>'+
+    '<p class="sub">Toda orientação e todo ajuste de cena fica aqui em aberto até você voltar e contar como foi. É o retorno que fecha o ciclo — e o que mostra se a orientação funcionou.</p></div>'+
+    '<div class="filtros">'+
+    ["aberta","feita","todas"].map(function(f){
+      return '<button class="escolha'+(filtroAtv===f?" ativa":"")+'" data-f="'+f+'">'+({aberta:"em aberto",feita:"concluídas",todas:"todas"})[f]+'</button>';
+    }).join("")+'</div>'+
+    '<div id="lista-atv">'+(lista.length?"":'<div class="vazio">Nada aqui. As atividades nascem quando você pede uma orientação numa ficha ou termina uma cena.</div>')+'</div></div>';
+  Array.prototype.forEach.call(c.querySelectorAll(".filtros .escolha"),function(b){
+    b.addEventListener("click",function(){ filtroAtv=b.getAttribute("data-f"); telaAtividades(); });
+  });
+  var box=el("lista-atv");
+  lista.forEach(function(a){
+    var p=a.pessoa?estado.fichas[a.pessoa]:null;
+    var d=document.createElement("div");
+    d.className="atv"+(a.status==="feita"?" feita":"");
+    d.innerHTML='<div class="atv-topo"><div><h3>'+esc(a.titulo)+'</h3>'+
+      '<p class="mono cinza" style="margin:2px 0 0">'+esc({orientacao:"orientação",cena:"cena treinada",preparacao:"preparação",indicacao:"indicação"}[a.tipo]||a.tipo)+
+      (p?' · '+esc(p.nome):'')+'</p></div><span class="quando">'+dataBr(a.data)+'</span></div>'+
+      (a.corpo?'<p class="corpo">'+esc(a.corpo)+'</p>':'')+
+      ((a.passos&&a.passos.length)?'<div style="margin-top:8px">'+a.passos.map(function(x){
+        return '<div class="acao"><b>'+esc(x[0])+'</b><div><strong>'+esc(x[1])+'</strong><br><em>'+esc(x[2])+'</em></div></div>';}).join("")+'</div>':'')+
+      (a.status==="feita"
+        ? '<div class="feedback"><p class="mono cinza">seu retorno · '+esc(a.resultado||"")+'</p><p>'+esc(a.feedback||"")+'</p>'+
+          (a.efeito?'<p class="mono" style="color:var(--latao);margin-top:6px">'+esc(a.efeito)+'</p>':'')+'</div>'
+        : '<div class="feedback"><label class="campo-rot" for="fb-'+a.id+'">Como foi quando você fez?</label>'+
+          '<textarea id="fb-'+a.id+'" placeholder="Conte o que você falou, o que a pessoa respondeu e como ficou."></textarea>'+
+          '<div class="opcoes-linha" id="res-'+a.id+'">'+
+          ["funcionou","funcionou em parte","não funcionou","ainda não fiz"].map(function(r,i){
+            return '<button class="escolha'+(i===0?" ativa":"")+'" data-r="'+r+'">'+r+'</button>';}).join("")+'</div>'+
+          '<div class="acoes"><button class="btn" data-fechar="'+a.id+'">Registrar retorno</button>'+
+          '<span id="mic-'+a.id+'"></span>'+
+          '<button class="btn-pequeno" data-apagar="'+a.id+'">apagar</button></div>'+
+          '<div id="saida-'+a.id+'"></div></div>');
+    box.appendChild(d);
+    if(a.status!=="feita"){
+      el("mic-"+a.id).appendChild(botaoMic(el("fb-"+a.id),"falar"));
+      var resultado="funcionou";
+      Array.prototype.forEach.call(el("res-"+a.id).children,function(b){
+        b.addEventListener("click",function(){
+          Array.prototype.forEach.call(el("res-"+a.id).children,function(x){x.classList.remove("ativa");});
+          b.classList.add("ativa"); resultado=b.getAttribute("data-r");
+        });
+      });
+      d.querySelector("[data-fechar]").addEventListener("click",function(){ fechaAtividade(a,resultado); });
+      d.querySelector("[data-apagar]").addEventListener("click",function(){
+        if(!confirm("Apagar esta atividade?")) return;
+        estado.atividades=estado.atividades.filter(function(x){return x.id!==a.id;});
+        salva(); telaAtividades();
+      });
+    }
+  });
+}
+function fechaAtividade(a,resultado){
+  var fb=el("fb-"+a.id).value.trim();
+  if(!fb){ el("fb-"+a.id).focus(); return; }
+  if(ehLimite(fb)){ vai("#/limite"); return; }
+  var p=a.pessoa?estado.fichas[a.pessoa]:null;
+  var saida=el("saida-"+a.id);
+  saida.innerHTML='<p class="digitando" style="margin-top:10px">lendo seu retorno<i></i><i></i><i></i></p>';
+  var sys="Você fecha o ciclo de uma atividade de treino de comunicação. O usuário seguiu (ou não) uma orientação e está contando o resultado.\n"+
+    (p?("Pessoa envolvida: "+p.nome+", "+p.papel+". Nota atual da relação: "+p.relacao+"/10.\n"):"")+
+    "Roda do usuário na ordem "+EIXOS.join(", ")+": "+estado.roda.map(num).join(", ")+".\n"+
+    "Resultado declarado pelo usuário: "+resultado+".\n"+
+    'Devolva SOMENTE JSON: {"leitura":"","relacao":null,"roda":[["competência",0.0]],"proxima":""}\n'+
+    "leitura: duas frases sobre o que o retorno mostra. Direto, sem elogio vazio.\n"+
+    "relacao: nova nota de 0 a 10 se o episódio mexeu na relação, ou null. Mova pouco.\n"+
+    "roda: ajustes [competência, delta entre -0,3 e +0,3] só se houver evidência de comportamento no relato. Lista vazia se não houver.\n"+
+    "proxima: uma frase sobre o próximo passo concreto, ou vazio se não há.\n"+
+    "Nunca diagnostique a pessoa. Português do Brasil.";
+  chamar(sys,[{role:"user",content:"Atividade: "+a.titulo+"\nOrientação: "+(a.corpo||"")+"\nRetorno: "+fb}],800)
+  .then(function(s){
+    var r=comoJSON(s),efeitos=[];
+    if(p&&r.relacao!=null){
+      var nova=Math.max(0,Math.min(10,r.relacao));
+      if(Math.abs(nova-p.relacao)>=0.1){ efeitos.push("relação com "+p.nome+" "+num(p.relacao)+" → "+num(nova)); p.relacao=nova;
+        p.notas.push({data:hoje(),texto:"Atividade: "+a.titulo+" — "+fb,efeito:"relação → "+num(nova)}); }
+    }
+    (r.roda||[]).forEach(function(x){
+      var i=idxEixo(x[0]); if(i<0) return;
+      var dd=Math.max(-0.3,Math.min(0.3,x[1]));
+      if(Math.abs(dd)<0.05) return;
+      var antes=estado.roda[i];
+      estado.roda[i]=Math.round(Math.max(0,Math.min(5,antes+dd))*100)/100;
+      efeitos.push(EIXOS[i]+" "+num(antes)+" → "+num(estado.roda[i]));
+      estado.origens.push({data:hoje(),fonte:"atividade concluída",eixo:EIXOS[i],
+        texto:"Aplicou na vida real: "+a.titulo,delta:Math.round((estado.roda[i]-antes)*100)/100});
+    });
+    a.status="feita"; a.feedback=fb; a.resultado=resultado;
+    a.leitura=r.leitura||""; a.proxima=r.proxima||"";
+    a.efeito=efeitos.length?efeitos.join(" · "):"";
+    salva(); telaAtividades();
+  }).catch(function(){
+    a.status="feita"; a.feedback=fb; a.resultado=resultado; a.efeito="";
+    salva(); telaAtividades();
+  });
+}
+
+/* ================= TELA: INDICAÇÕES ================= */
+function telaIndicacoes(){
+  var c=el("tela-indicacoes"),f=fracos(3);
+  var escolhidos=ACERVO.filter(function(it){ return it.eixos.some(function(e){ return f.indexOf(e)>=0; }); });
+  var porTipo={livro:[],filme:[],palestra:[],video:[]};
+  escolhidos.forEach(function(it){ porTipo[it.tipo].push(it); });
+  c.innerHTML='<div class="wrap"><div class="cabecalho"><p class="mono cinza">indicações</p>'+
+    '<h1>Para o que está mais fraco na sua roda</h1>'+
+    '<p class="sub">'+(estado.diagnosticoFeito||estado.cenas
+      ?'Hoje seus pontos mais baixos são <strong>'+f.map(function(i){return EIXOS[i];}).join("</strong>, <strong>")+'</strong>. Tudo abaixo foi escolhido por causa disso.'
+      :'Faça o diagnóstico ou treine uma cena para as indicações apontarem para o seu caso, e não para a média.')+'</p></div>'+
+    '<div class="acoes" style="margin-top:18px"><button class="btn" id="pedir-ia">Pedir uma leitura da IA</button>'+
+    '<a class="btn-vazado" href="#/avaliacao">ver minha roda</a></div>'+
+    '<div id="leitura-ia"></div>'+
+    '<div id="grupos"></div>'+
+    '<p class="dica" style="margin-top:34px">Acervo curado: nada aqui é inventado na hora. A IA escolhe dentro desta lista e explica por que serve para o seu caso.</p></div>';
+  var g=el("grupos");
+  [["livro","livros"],["palestra","palestras"],["filme","filmes"],["video","vídeos"]].forEach(function(par){
+    var itens=porTipo[par[0]];
+    if(!itens.length) return;
+    var h=document.createElement("div");
+    h.innerHTML='<div class="grupo-titulo"><h4>'+par[1]+'</h4><span>'+itens.length+'</span></div>'+
+      itens.map(function(it){
+        var jaTem=estado.atividades.some(function(a){return a.tipo==="indicacao"&&a.item===it.id;});
+        return '<div class="item"><div><h3>'+esc(it.titulo)+'</h3><p class="aut">'+esc(it.autor)+'</p>'+
+          '<p class="pq">'+esc(it.nota)+'</p><div class="meta">'+
+          it.eixos.map(function(e){return '<span class="tag'+(f.indexOf(e)>=0?" forte":"")+'">'+EIXOS[e]+'</span>';}).join("")+
+          '</div></div><div class="item-acoes">'+
+          '<a class="btn-pequeno" href="'+linkItem(it)+'" target="_blank" rel="noopener">abrir</a>'+
+          '<button class="btn-pequeno" data-add="'+it.id+'"'+(jaTem?' disabled':'')+'>'+(jaTem?"nas atividades":"quero fazer")+'</button>'+
+          '</div></div>';
+      }).join("");
+    g.appendChild(h);
+  });
+  Array.prototype.forEach.call(g.querySelectorAll("[data-add]"),function(b){
+    b.addEventListener("click",function(){
+      var it=ACERVO.filter(function(x){return x.id===b.getAttribute("data-add");})[0];
+      criaAtividade({tipo:"indicacao",item:it.id,titulo:it.titulo+" — "+rotuloTipo(it.tipo),
+        corpo:it.autor+". "+it.nota+" Quando terminar, conte aqui o que levou disso para a prática."});
+      b.disabled=true; b.textContent="nas atividades";
+    });
+  });
+  el("pedir-ia").addEventListener("click",function(){
+    var box=el("leitura-ia");
+    box.innerHTML='<p class="digitando" style="margin-top:16px">cruzando sua roda com o acervo<i></i><i></i><i></i></p>';
+    var catalogo=ACERVO.map(function(it){ return it.id+" | "+rotuloTipo(it.tipo)+" | "+it.titulo+" ("+it.autor+") | competências: "+it.eixos.map(function(e){return EIXOS[e];}).join(", "); }).join("\n");
+    var ultimas=estado.origens.slice(-5).map(function(o){return o.texto;}).join("; ");
+    var sys="Você recomenda material de estudo para alguém treinando comunicação no trabalho.\n"+
+      "Roda dele na ordem "+EIXOS.join(", ")+": "+estado.roda.map(num).join(", ")+".\n"+
+      (ultimas?("Últimas evidências: "+ultimas+"\n"):"")+
+      "ACERVO DISPONÍVEL (escolha SOMENTE ids desta lista, nunca invente títulos):\n"+catalogo+"\n\n"+
+      'Devolva SOMENTE JSON: {"leitura":"","ordem":[{"id":"","porque":""},{"id":"","porque":""},{"id":"","porque":""},{"id":"","porque":""}]}\n'+
+      "leitura: duas frases sobre o que a roda dele está pedindo agora.\n"+
+      "ordem: 4 itens do acervo, do mais urgente ao menos, cada um com uma frase dizendo por que serve para ESTE caso. Varie os tipos.\n"+
+      "Português do Brasil, direto, sem jargão.";
+    chamar(sys,[{role:"user",content:"Monte a leitura e a ordem."}],1200).then(function(s){
+      var r=comoJSON(s);
+      box.innerHTML='<div class="cartao" style="margin-top:18px"><p class="mono cinza">leitura da sua roda</p>'+
+        '<p style="margin:8px 0 14px">'+esc(r.leitura||"")+'</p>'+
+        (r.ordem||[]).map(function(o,i){
+          var it=ACERVO.filter(function(x){return x.id===o.id;})[0];
+          if(!it) return "";
+          return '<div class="acao"><b>'+("0"+(i+1)).slice(-2)+'</b><div><strong>'+esc(it.titulo)+'</strong> · '+rotuloTipo(it.tipo)+
+            '<br><em>'+esc(o.porque)+'</em><br><a class="btn-pequeno" style="margin-top:8px;display:inline-block" href="'+linkItem(it)+'" target="_blank" rel="noopener">abrir</a>'+
+            ' <button class="btn-pequeno" data-add2="'+it.id+'">quero fazer</button></div></div>';
+        }).join("")+'</div>';
+      Array.prototype.forEach.call(box.querySelectorAll("[data-add2]"),function(b){
+        b.addEventListener("click",function(){
+          var it=ACERVO.filter(function(x){return x.id===b.getAttribute("data-add2");})[0];
+          criaAtividade({tipo:"indicacao",item:it.id,titulo:it.titulo+" — "+rotuloTipo(it.tipo),corpo:it.autor+". "+it.nota});
+          b.disabled=true; b.textContent="nas atividades";
+        });
+      });
+    }).catch(function(err){
+      box.innerHTML='<p style="margin-top:16px;color:var(--vermelho)">Não consegui pedir a leitura ('+esc(err.message)+'). A lista abaixo continua valendo: ela é montada pelos seus pontos mais baixos.</p>';
+    });
+  });
+}
+
+/* ================= TELA: PREPARAÇÃO ================= */
+var TIPOS_PREP=[
+  {id:"apresentacao",nome:"Apresentação",desc:"Reunião, conselho, cliente, defesa de projeto.",eixos:[4,7,3]},
+  {id:"entrevista",nome:"Entrevista de emprego",desc:"Processo seletivo, conversa com recrutador.",eixos:[0,4,3]},
+  {id:"negociacao",nome:"Negociação",desc:"Salário, prazo, escopo, contrato.",eixos:[1,7,0]},
+  {id:"feedback",nome:"Dar um feedback",desc:"Conversa difícil com alguém do time.",eixos:[2,4,5]},
+  {id:"dificil",nome:"Conversa difícil",desc:"Cobrar, discordar, dizer não, comunicar erro.",eixos:[0,1,2]},
+  {id:"publico",nome:"Falar em público",desc:"Palco, treinamento, evento, aula.",eixos:[3,4,1]}
+];
+function telaPreparacao(){
+  var c=el("tela-preparacao");
+  c.innerHTML='<div class="wrap"><div class="cabecalho"><p class="mono cinza">preparação</p>'+
+    '<h1>Preparar antes, não improvisar depois</h1>'+
+    '<p class="sub">Escolha o que você vai enfrentar. Sai um plano com o roteiro, o que ensaiar e os vídeos que cobrem aquele caso — e vira atividade em aberto até você contar como foi.</p></div>'+
+    '<div class="grid" style="margin-top:24px" id="tipos"></div>'+
+    ((Object.keys(estado.preparacoes).length)?'<h4>Preparações que você montou</h4><div id="antigas"></div>':'')+
+    '</div>';
+  var g=el("tipos");
+  TIPOS_PREP.forEach(function(t){
+    var b=document.createElement("button");
+    b.className="card";
+    b.innerHTML='<p class="mono" style="color:var(--latao)">'+rotuloTipo("video")+' + roteiro</p><h3>'+t.nome+'</h3>'+
+      '<p class="papel">'+esc(t.desc)+'</p><p class="ler">preparar →</p>';
+    b.addEventListener("click",function(){ vai("#/plano/"+t.id); });
+    g.appendChild(b);
+  });
+  var an=el("antigas");
+  if(an){
+    Object.keys(estado.preparacoes).reverse().forEach(function(k){
+      var p=estado.preparacoes[k],d=document.createElement("div");
+      d.className="atv";
+      d.innerHTML='<div class="atv-topo"><div><h3>'+esc(p.titulo)+'</h3>'+
+        '<p class="mono cinza" style="margin:2px 0 0">'+esc(p.tipoNome)+'</p></div>'+
+        '<span class="quando">'+dataBr(p.data)+'</span></div>'+
+        '<div class="acoes"><button class="btn-pequeno" data-abrir="'+k+'">abrir plano</button></div>';
+      d.querySelector("[data-abrir]").addEventListener("click",function(){ vai("#/plano/"+p.tipo+"/"+k); });
+      an.appendChild(d);
+    });
+  }
+}
+function telaPlano(tipoId){
+  var salvoId=ROTA.arg2||null;
+  var tipo=TIPOS_PREP.filter(function(t){return t.id===tipoId;})[0]||TIPOS_PREP[0];
+  var c=el("tela-plano");
+  var videos=ACERVO.filter(function(it){
+    return (it.tipo==="video"||it.tipo==="palestra")&&it.eixos.some(function(e){return tipo.eixos.indexOf(e)>=0;});
+  });
+  var salvo=salvoId?estado.preparacoes[salvoId]:null;
+  c.innerHTML='<div class="wrap-estreito"><button class="voltar" data-voltar>← preparação</button>'+
+    '<p class="mono cinza">preparação</p><h1 style="font-size:28px;margin:8px 0 10px">'+esc(tipo.nome)+'</h1>'+
+    '<p class="cinza" style="max-width:60ch">'+esc(tipo.desc)+' Conte o contexto: quem é a plateia, quanto tempo você tem, o que está em jogo.</p>'+
+    '<div class="cartao" style="margin-top:20px">'+
+      '<label class="campo-rot" for="ctx">Seu contexto</label>'+
+      '<textarea id="ctx" style="min-height:110px" placeholder="Ex.: apresentação de 15 minutos para o conselho, sobre o resultado do trimestre, que veio abaixo da meta.">'+esc(salvo?salvo.contexto:"")+'</textarea>'+
+      '<div class="acoes"><button class="btn" id="montar-plano">Montar o plano</button><span id="mic-ctx"></span></div>'+
+    '</div>'+
+    '<div id="plano">'+(salvo?planoHTML(salvo):"")+'</div>'+
+    '<h4>Vídeos para este caso</h4>'+
+    videos.map(function(it){
+      return '<div class="item"><div><h3>'+esc(it.titulo)+'</h3><p class="aut">'+esc(it.autor)+'</p>'+
+        '<p class="pq">'+esc(it.nota)+'</p></div><div class="item-acoes">'+
+        '<a class="btn-pequeno" href="'+linkItem(it)+'" target="_blank" rel="noopener">assistir</a></div></div>';
+    }).join("")+
+    '<p class="dica" style="margin:18px 0 40px">Os vídeos abrem uma busca já montada no YouTube. Prefiro isso a te mandar um link que pode ter saído do ar.</p>'+
+    '</div>';
+  ligaVoltar(c);
+  el("mic-ctx").appendChild(botaoMic(el("ctx"),"falar"));
+  if(salvo) ligaPlano(salvo);
+  el("montar-plano").addEventListener("click",function(){
+    var t=el("ctx").value.trim();
+    if(!t){ el("ctx").focus(); return; }
+    if(ehLimite(t)){ vai("#/limite"); return; }
+    el("plano").innerHTML='<p class="digitando" style="margin-top:18px">montando o roteiro<i></i><i></i><i></i></p>';
+    el("montar-plano").disabled=true;
+    var sys="Você prepara alguém para um compromisso de comunicação no trabalho. Tipo: "+tipo.nome+".\n"+
+      "Roda do usuário na ordem "+EIXOS.join(", ")+": "+estado.roda.map(num).join(", ")+".\n"+
+      "Pontos mais fracos: "+fracos(3).map(function(i){return EIXOS[i];}).join(", ")+".\n"+
+      'Devolva SOMENTE JSON: {"titulo":"","roteiro":[["01","",""],["02","",""],["03","",""],["04","",""]],'+
+      '"ensaiar":["","",""],"armadilha":"","frase":""}\n'+
+      "titulo: nome curto do plano, específico ao contexto.\n"+
+      "roteiro: 4 blocos [número, título do bloco, o que fazer nele]. Concreto, não genérico.\n"+
+      "ensaiar: 3 coisas para treinar em voz alta antes, ligadas aos pontos fracos da roda dele.\n"+
+      "armadilha: o erro mais provável DESTE usuário neste tipo de compromisso, dado o ponto mais baixo da roda.\n"+
+      "frase: uma frase de abertura pronta, no registro dele.\n"+
+      "Português do Brasil, direto, sem jargão de coach.";
+    chamar(sys,[{role:"user",content:t}],1400).then(function(s){
+      var r=comoJSON(s);
+      var id=salvoId||uid("prep");
+      estado.preparacoes[id]={tipo:tipo.id,tipoNome:tipo.nome,titulo:r.titulo||tipo.nome,contexto:t,plano:r,data:hoje()};
+      salva();
+      el("montar-plano").disabled=false;
+      el("plano").innerHTML=planoHTML(estado.preparacoes[id]);
+      ligaPlano(estado.preparacoes[id]);
+    }).catch(function(err){
+      el("montar-plano").disabled=false;
+      el("plano").innerHTML='<p style="margin-top:16px;color:var(--vermelho)">Não consegui montar o plano ('+esc(err.message)+').</p>';
+    });
+  });
+}
+function planoHTML(p){
+  var r=p.plano;
+  return '<div class="cartao" style="margin-top:18px"><p class="mono cinza">seu plano</p>'+
+    '<h3 style="margin:6px 0 12px">'+esc(r.titulo||p.titulo)+'</h3>'+
+    (r.roteiro||[]).map(function(x){return '<div class="acao"><b>'+esc(x[0])+'</b><div><strong>'+esc(x[1])+'</strong><br><em>'+esc(x[2])+'</em></div></div>';}).join("")+
+    '<h4 style="margin:24px 0 10px;font-size:17px">Ensaie em voz alta</h4>'+
+    '<ul style="margin:0;padding-left:20px;color:var(--texto-2)">'+(r.ensaiar||[]).map(function(x){return '<li style="margin-bottom:6px">'+esc(x)+'</li>';}).join("")+'</ul>'+
+    (r.armadilha?'<div class="ressalva" style="margin-top:18px"><strong>Sua armadilha nesse tipo de conversa:</strong> '+esc(r.armadilha)+'</div>':'')+
+    (r.frase?'<p class="citacao melhor" style="margin-top:18px">'+esc(r.frase)+'</p>':'')+
+    '<div class="acoes"><button class="btn" id="prep-atv">Deixar em aberto nas atividades</button></div></div>';
+}
+function ligaPlano(p){
+  var b=el("prep-atv"); if(!b) return;
+  b.addEventListener("click",function(){
+    criaAtividade({tipo:"preparacao",titulo:p.titulo,corpo:p.contexto,
+      passos:(p.plano.roteiro||[]).slice(0,4)});
+    b.disabled=true; b.textContent="está nas suas atividades";
+  });
+}
+
+/* ================= TELA: AVALIAÇÃO ================= */
+function telaAvaliacao(){
+  var c=el("tela-avaliacao"),origens=estado.origens.slice().reverse();
+  c.innerHTML='<div class="wrap"><div class="cabecalho"><p class="mono cinza">avaliação</p>'+
+    '<h1>Sua roda</h1><p class="sub">Cada ponto se move por evidência: o diagnóstico marca o começo, as cenas refeitas e as atividades aplicadas empurram daí em diante.</p></div>'+
+    '<div class="dcabeca" style="margin-top:24px"><div>'+
+      '<div class="acoes" style="margin:0 0 18px"><button class="btn" id="btn-diag">'+
+        (estado.diagnosticoFeito?"Refazer o diagnóstico":"Fazer o diagnóstico de entrada")+'</button>'+
+        '<a class="btn-vazado" href="#/indicacoes">ver indicações</a></div>'+
+      '<div class="barras">'+EIXOS.map(function(e,i){
+        var v=estado.roda[i],ent=estado.entrada?estado.entrada[i]:null,d=(ent!=null)?(v-ent):0;
+        return '<div class="barra-item"><div class="k"><span>'+esc(e)+'</span><span><b>'+num(v)+'</b>'+
+          (ent!=null&&Math.abs(d)>=0.05?' <span style="color:var(--latao)">'+(d>0?"+":"")+num(d)+'</span>':'')+
+          '</span></div><div class="trilho"><span class="barrinha" style="width:'+(v/5*100)+'%"></span></div></div>';
+      }).join("")+'</div></div>'+
+      '<div class="radar-box"><svg class="radar" id="r-min" viewBox="0 0 240 240"></svg>'+
+      '<div class="legenda"><span class="leg"><i style="border-top-color:var(--latao)"></i>hoje</span>'+
+      (estado.entrada?'<span class="leg"><i style="border-top-style:dashed"></i>entrada</span>':'')+'</div></div></div>'+
+    '<h4>De onde vieram os pontos</h4>'+
+    (origens.length?'<ul class="linha-tempo">'+origens.map(function(o){
+      return '<li><time>'+dataBr(o.data)+' · '+esc(o.fonte)+'</time><span>'+esc(o.texto)+
+        (o.delta?' <span class="delta">'+(o.delta>0?"+":"")+num(o.delta)+'</span>':'')+'</span></li>';
+    }).join("")+'</ul>':'<div class="vazio">Nada registrado ainda.</div>')+
+    '<div style="height:50px"></div></div>';
+  desenha(el("r-min"),{vals:estado.roda,antes:estado.entrada,classe:"poly-cheia",rotulos:true});
+  el("btn-diag").addEventListener("click",function(){ diagI=0;diagR=[];vai("#/diagnostico"); });
+}
+
+/* ================= TELA: DIAGNÓSTICO ================= */
+var AFIRMACOES=[
+  "Quando discordo numa reunião, eu falo na hora.",
+  "Quando a pessoa insiste, eu mantenho a minha posição.",
+  "Consigo discordar de alguém sem que a relação fique arranhada.",
+  "Sou eu quem começa a falar quando abre espaço na reunião.",
+  "As pessoas entendem o que eu quis dizer já na primeira vez.",
+  "Deixo a pessoa terminar de falar antes de responder.",
+  "Releio minhas mensagens de trabalho pensando em como vão soar.",
+  "Chego na conclusão antes de contar todo o contexto."
+];
+var OPCOES=["Quase nunca","Raramente","Às vezes","Quase sempre","Sempre"];
+var diagI=0,diagR=[];
+function telaDiagnostico(){
+  var c=el("tela-diagnostico");
+  c.innerHTML='<div class="wrap-estreito"><button class="voltar" data-voltar>← voltar</button>'+
+    '<p class="mono cinza">diagnóstico de entrada</p>'+
+    '<h1 id="dg-tit" style="font-size:29px;margin:10px 0 10px"></h1>'+
+    '<p class="cinza" id="dg-sub" style="max-width:60ch"></p>'+
+    '<div class="progresso"><i id="dg-barra"></i></div><div id="dg-corpo"></div></div>';
+  ligaVoltar(c);
+  passoDiag();
+}
+function passoDiag(){
+  el("dg-barra").style.width=(diagI/AFIRMACOES.length*100)+"%";
+  if(diagI>=AFIRMACOES.length){ fechaDiag(); return; }
+  el("dg-tit").textContent="Oito frases. Sem resposta certa.";
+  el("dg-sub").textContent="Isto é só o que você declara — a mais fraca das três fontes. A roda de verdade se move quando você refaz cenas e aplica na vida real.";
+  el("dg-corpo").innerHTML='<p class="mono cinza">'+(diagI+1)+' de '+AFIRMACOES.length+'</p>'+
+    '<p class="afirmacao">'+esc(AFIRMACOES[diagI])+'</p><div class="escala" id="escala"></div>';
+  OPCOES.forEach(function(o,i){
+    var b=document.createElement("button");
+    b.className="op"; b.innerHTML='<b>'+(i+1)+'</b>'+esc(o);
+    b.addEventListener("click",function(){ diagR[diagI]=i*1.25; diagI++; passoDiag(); });
+    el("escala").appendChild(b);
+  });
+}
+function fechaDiag(){
+  estado.roda=diagR.slice();
+  if(!estado.entrada) estado.entrada=diagR.slice();
+  estado.diagnosticoFeito=true;
+  estado.origens.push({data:hoje(),fonte:"declarado",texto:"Diagnóstico de entrada respondido",delta:null});
+  salva();
+  el("dg-barra").style.width="100%";
+  el("dg-tit").textContent="Pronto. Esse é o seu ponto de partida.";
+  el("dg-sub").textContent="Nenhum desses números é evidência ainda — é o que você acha de si mesmo. Eles passam a valer quando uma cena refeita confirmar ou desmentir.";
+  el("dg-corpo").innerHTML='<div style="max-width:320px;margin:8px 0 22px"><svg class="radar" id="r-dg" viewBox="0 0 240 240"></svg></div>'+
+    '<div class="acoes"><button class="btn" id="dg-cena">Treinar uma situação agora</button>'+
+    '<a class="btn-vazado" href="#/indicacoes">ver indicações para meus pontos fracos</a></div>';
+  desenha(el("r-dg"),{vals:estado.roda,classe:"poly-cheia",rotulos:true});
+  el("dg-cena").addEventListener("click",function(){ vai("#/resolver"); });
+}
+
+/* ================= TELA: CONTA ================= */
+var SITUACOES=[
+  {id:"clt",nome:"Trabalho registrado"},
+  {id:"autonomo",nome:"Autônomo ou dono de negócio"},
+  {id:"estudante",nome:"Estudando"},
+  {id:"procurando",nome:"Procurando emprego"}
+];
+function linkedinBusca(cargo,local){
+  var u="https://www.linkedin.com/jobs/search/?keywords="+encodeURIComponent(cargo);
+  if(local) u+="&location="+encodeURIComponent(local);
+  return u;
+}
+function telaConta(){
+  var c=el("tela-conta"),k=estado.conta;
+  c.innerHTML='<div class="wrap-estreito"><div class="cabecalho"><p class="mono cinza">conta</p>'+
+    '<h1>Quem está treinando</h1>'+
+    '<p class="sub">Isto fica só no seu aparelho e serve para a IA calibrar as cenas, os planos e as indicações para a sua realidade.</p></div>'+
+    '<div class="cartao" style="margin-top:22px">'+
+      '<label class="campo-rot" for="k-nome">Nome</label><input id="k-nome" value="'+esc(k.nome)+'" placeholder="Como você quer ser chamado">'+
+      '<label class="campo-rot" for="k-idade">Idade</label><input id="k-idade" type="number" min="14" max="99" value="'+esc(k.idade)+'" placeholder="Ex.: 34">'+
+      '<label class="campo-rot">Situação hoje</label>'+
+      '<div class="opcoes-linha" id="k-sit">'+SITUACOES.map(function(s){
+        return '<button class="escolha'+(k.situacao===s.id?" ativa":"")+'" data-s="'+s.id+'">'+s.nome+'</button>';
+      }).join("")+'</div>'+
+      '<div id="k-extra"></div>'+
+      '<div class="acoes"><button class="btn" id="k-salvar">Salvar</button><span class="dica" id="k-aviso"></span></div>'+
+    '</div>'+
+    '<div id="k-vagas"></div>'+
+    '<div class="cartao" style="margin-top:20px"><h3>Seus dados</h3>'+
+      '<p style="font-size:15.5px;color:var(--texto-2);margin:6px 0 0">Tudo o que você escreveu — roda, fichas, atividades, currículo — está guardado neste navegador e em nenhum outro lugar. Nada é enviado para a Antessala.</p>'+
+      '<div class="acoes"><button class="btn-vazado" id="k-exportar">Baixar meus dados</button>'+
+      '<button class="btn-pequeno" id="k-apagar">apagar tudo</button></div></div>'+
+    '<div style="height:50px"></div></div>';
+  var sit=k.situacao;
+  function extra(){
+    var e=el("k-extra");
+    if(sit==="procurando"){
+      e.innerHTML='<label class="campo-rot" for="k-cv">Seu currículo</label>'+
+        '<textarea id="k-cv" style="min-height:170px" placeholder="Cole o texto do currículo, ou fale sua trajetória: formação, onde trabalhou, o que fazia, o que sabe fazer bem.">'+esc(k.curriculo)+'</textarea>'+
+        '<div class="acoes"><span id="mic-cv"></span></div>'+
+        '<label class="campo-rot" for="k-local">Onde você quer trabalhar</label>'+
+        '<input id="k-local" value="'+esc(k.local||"")+'" placeholder="Ex.: São Paulo, ou remoto">'+
+        '<div class="acoes"><button class="btn" id="k-analisar">Analisar meu perfil e achar caminhos de vaga</button></div>';
+      el("mic-cv").appendChild(botaoMic(el("k-cv"),"falar o currículo"));
+      el("k-analisar").addEventListener("click",analisaPerfil);
+    }else if(sit==="estudante"){
+      e.innerHTML='<label class="campo-rot" for="k-empresa">Onde você estuda</label><input id="k-empresa" value="'+esc(k.empresa)+'" placeholder="Instituição e curso">';
+    }else if(sit){
+      e.innerHTML='<label class="campo-rot" for="k-empresa">Onde você trabalha</label><input id="k-empresa" value="'+esc(k.empresa)+'" placeholder="Empresa ou o seu negócio">'+
+        '<label class="campo-rot" for="k-cargo">O que você faz lá</label><input id="k-cargo" value="'+esc(k.cargo)+'" placeholder="Cargo ou função">';
+    }else{ e.innerHTML=""; }
+  }
+  extra();
+  Array.prototype.forEach.call(el("k-sit").children,function(b){
+    b.addEventListener("click",function(){
+      Array.prototype.forEach.call(el("k-sit").children,function(x){x.classList.remove("ativa");});
+      b.classList.add("ativa"); sit=b.getAttribute("data-s"); k.situacao=sit; extra();
+    });
+  });
+  el("k-salvar").addEventListener("click",function(){
+    k.nome=el("k-nome").value.trim();
+    k.idade=el("k-idade").value.trim();
+    k.situacao=sit;
+    if(el("k-empresa")) k.empresa=el("k-empresa").value.trim();
+    if(el("k-cargo")) k.cargo=el("k-cargo").value.trim();
+    if(el("k-cv")) k.curriculo=el("k-cv").value.trim();
+    if(el("k-local")) k.local=el("k-local").value.trim();
+    salva(); el("k-aviso").textContent="salvo";
+    setTimeout(function(){ el("k-aviso").textContent=""; },1800);
+  });
+  el("k-exportar").addEventListener("click",function(){
+    var b=new Blob([JSON.stringify(estado,null,2)],{type:"application/json"});
+    var a=document.createElement("a");
+    a.href=URL.createObjectURL(b); a.download="antessala-meus-dados.json"; a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); },2000);
+  });
+  el("k-apagar").addEventListener("click",function(){ el("zerar-tudo").click(); });
+  if(k.analise) mostraVagas(k.analise);
+}
+function analisaPerfil(){
+  var k=estado.conta;
+  k.curriculo=el("k-cv").value.trim();
+  k.local=el("k-local").value.trim();
+  if(!k.curriculo){ el("k-cv").focus(); return; }
+  salva();
+  var box=el("k-vagas");
+  box.innerHTML='<div class="cartao" style="margin-top:20px"><p class="digitando">lendo seu currículo e cruzando com a sua roda<i></i><i></i><i></i></p></div>';
+  el("k-analisar").disabled=true;
+  var fichasTxt=Object.keys(estado.fichas).slice(0,4).map(function(i){
+    var p=estado.fichas[i]; return p.papel+" (relação "+num(p.relacao)+"/10)";
+  }).join("; ");
+  var sys="Você orienta a busca de emprego de alguém, cruzando o currículo com o perfil de comunicação medido num app de treino.\n"+
+    "Roda de comunicação dele na ordem "+EIXOS.join(", ")+": "+estado.roda.map(num).join(", ")+" (escala 0 a 5).\n"+
+    "Pontos mais fortes: "+estado.roda.map(function(v,i){return {v:v,i:i};}).sort(function(a,b){return b.v-a.v;}).slice(0,3).map(function(x){return EIXOS[x.i];}).join(", ")+".\n"+
+    "Pontos mais fracos: "+fracos(3).map(function(i){return EIXOS[i];}).join(", ")+".\n"+
+    (fichasTxt?("Relações de trabalho que ele registrou: "+fichasTxt+".\n"):"")+
+    "Local desejado: "+(k.local||"não informado")+".\n\n"+
+    'Devolva SOMENTE JSON: {"perfil":"","forcas":["","",""],"cuidado":"",'+
+    '"cargos":[{"titulo":"","porque":"","palavras":["",""]}],"filtros":["",""],"melhorar":["",""]}\n'+
+    "perfil: três frases sobre o profissional que esse currículo e essa roda descrevem juntos. Honesto, sem bajulação.\n"+
+    "forcas: 3 pontos que ele deve destacar em entrevista, ligando experiência e comunicação.\n"+
+    "cuidado: o ponto da roda que pode atrapalhar na entrevista ou no cargo, dito sem rodeio.\n"+
+    "cargos: 4 a 6 títulos de vaga realistas para o mercado brasileiro, cada um com o porquê e 2 palavras-chave de busca.\n"+
+    "filtros: 2 ou 3 filtros práticos de busca (nível, modelo de trabalho, porte de empresa).\n"+
+    "melhorar: 2 coisas concretas para arrumar no currículo.\n"+
+    "NUNCA invente vagas, empresas contratando ou links. Você indica caminhos de busca, não anúncios. Português do Brasil.";
+  chamar(sys,[{role:"user",content:"Currículo:\n"+k.curriculo}],1800).then(function(s){
+    var r=comoJSON(s);
+    k.analise=r; k.analiseData=hoje(); salva();
+    el("k-analisar").disabled=false;
+    mostraVagas(r);
+  }).catch(function(err){
+    el("k-analisar").disabled=false;
+    box.innerHTML='<div class="cartao" style="margin-top:20px"><p style="color:var(--vermelho);margin:0">Não consegui analisar ('+esc(err.message)+'). Confira a conexão no ícone do topo.</p></div>';
+  });
+}
+function mostraVagas(r){
+  var k=estado.conta,box=el("k-vagas");
+  box.innerHTML='<div class="cartao" style="margin-top:20px">'+
+    '<p class="mono cinza">leitura do seu perfil'+(k.analiseData?" · "+dataBr(k.analiseData):"")+'</p>'+
+    '<p style="margin:10px 0 16px">'+esc(r.perfil||"")+'</p>'+
+    '<h4 style="margin:0 0 10px;font-size:17px">O que destacar</h4>'+
+    '<ul style="margin:0 0 16px;padding-left:20px;color:var(--texto-2)">'+(r.forcas||[]).map(function(x){return '<li style="margin-bottom:5px">'+esc(x)+'</li>';}).join("")+'</ul>'+
+    (r.cuidado?'<div class="ressalva"><strong>Onde você pode escorregar:</strong> '+esc(r.cuidado)+'</div>':'')+
+    '</div>'+
+    '<div class="cartao"><h3>Caminhos de vaga</h3>'+
+    '<p style="font-size:15px;color:var(--texto-2);margin:6px 0 4px">Cada botão abre a busca já montada no LinkedIn. As vagas que aparecem são reais e atuais — eu não invento anúncio.</p>'+
+    (r.cargos||[]).map(function(cg){
+      return '<div class="item"><div><h3>'+esc(cg.titulo)+'</h3><p class="pq">'+esc(cg.porque)+'</p>'+
+        '<div class="meta">'+(cg.palavras||[]).map(function(p){return '<span class="tag">'+esc(p)+'</span>';}).join("")+'</div></div>'+
+        '<div class="item-acoes"><a class="btn-pequeno" target="_blank" rel="noopener" href="'+
+        linkedinBusca(cg.titulo,k.local)+'">buscar no LinkedIn</a></div></div>';
+    }).join("")+
+    ((r.filtros&&r.filtros.length)?'<p class="dica" style="margin-top:14px">Filtros que valem marcar: '+r.filtros.map(esc).join(" · ")+'</p>':'')+
+    '</div>'+
+    ((r.melhorar&&r.melhorar.length)?'<div class="cartao"><h3>Arrumar no currículo</h3>'+
+      (r.melhorar||[]).map(function(x,i){return '<div class="acao"><b>'+("0"+(i+1)).slice(-2)+'</b><div>'+esc(x)+'</div></div>';}).join("")+
+      '<div class="acoes"><button class="btn-pequeno" id="cv-atv">deixar em aberto nas atividades</button></div></div>':'');
+  var b=el("cv-atv");
+  if(b) b.addEventListener("click",function(){
+    criaAtividade({tipo:"preparacao",titulo:"Arrumar o currículo",corpo:(r.melhorar||[]).join(" · ")});
+    b.disabled=true; b.textContent="nas atividades";
+  });
+}
+
+/* ================= INÍCIO ================= */
+Store.ler(CHAVE).then(function(s){
+  if(s&&s.roda){
+    estado=Object.assign(estado,s);
+    estado.conexao=Object.assign({endpoint:"",chave:"",modelo:""},s.conexao||{});
+    estado.conta=Object.assign({nome:"",idade:"",situacao:"",empresa:"",cargo:"",curriculo:"",analise:null},s.conta||{});
+    estado.atividades=s.atividades||[];
+    estado.preparacoes=s.preparacoes||{};
+  }
+  pintaIA(); render();
+}).catch(function(){ pintaIA(); render(); });
+})();
+
+</script>
+</body>
+</html>
